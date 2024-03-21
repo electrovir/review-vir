@@ -1,0 +1,52 @@
+{
+    "name": "@review-vir/mono-repo",
+    "version": "0.0.0",
+    "private": true,
+    "license": "(MIT or CC0 1.0)",
+    "author": {
+        "name": "electrovir",
+        "url": "https://github.com/electrovir"
+    },
+    "workspaces": [
+        "./packages/*"
+    ],
+    "scripts": {
+        "compile": "mono-vir for-each tsc -b -f --pretty",
+        "format": "virmator format",
+        "start": "npm start --workspace @review-vir/review-vir",
+        "test": "mono-vir for-each-async npm run test:all",
+        "test:all": "npm run compile && concurrently --colors --kill-others-on-fail -c auto --names tests,spelling,format,deps \"npm run test\" \"npm run test:spelling\" \"npm run test:format\" \"npm run test:deps\"",
+        "test:deps": "virmator deps check",
+        "test:format": "virmator format check",
+        "test:spelling": "virmator spellcheck",
+        "test:types": "npm run compile"
+    },
+    "dependencies": {
+        "@augment-vir/common": "^26.0.2",
+        "date-vir": "^5.1.3",
+        "localforage-esm": "^1.10.2",
+        "spa-router-vir": "^3.0.4",
+        "type-fest": "^4.13.1",
+        "typed-event-target": "^3.2.0",
+        "vira": "^20.0.9"
+    },
+    "devDependencies": {
+        "@augment-vir/node-js": "^26.0.2",
+        "cspell": "^8.6.0",
+        "dependency-cruiser": "^16.2.4",
+        "esbuild": "^0.20.2",
+        "markdown-code-example-inserter": "^1.0.0",
+        "mono-vir": "^1.0.0",
+        "npm-check-updates": "~16.12.3",
+        "prettier": "^3.2.5",
+        "prettier-plugin-interpolated-html-tags": "^1.0.5",
+        "prettier-plugin-jsdoc": "^1.3.0",
+        "prettier-plugin-multiline-arrays": "^3.0.4",
+        "prettier-plugin-organize-imports": "^3.2.4",
+        "prettier-plugin-packagejson": "^2.4.12",
+        "prettier-plugin-sort-json": "^4.0.0",
+        "prettier-plugin-toml": "^2.0.1",
+        "typescript": "5.3.3",
+        "virmator": "^11.5.0"
+    }
+}
