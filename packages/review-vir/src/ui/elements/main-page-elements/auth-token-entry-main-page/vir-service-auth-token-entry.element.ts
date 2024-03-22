@@ -11,6 +11,7 @@ import {
 } from 'vira';
 import {AuthToken, SupportedServiceName} from '../../../../data/auth-tokens';
 import {VirErrorMessage} from '../../common-elements/vir-error-message.element';
+import {tokenDescriptions} from './token-descriptions';
 
 export type AuthTokenEntryError = {
     serviceName: SupportedServiceName;
@@ -61,6 +62,14 @@ export const VirServiceAuthTokenEntry = defineElement<{
 
         .delete:hover {
             color: red;
+        }
+
+        .description td:first-child {
+            padding-right: 16px;
+        }
+
+        .description table {
+            margin-left: 16px;
         }
     `,
     events: {
@@ -133,8 +142,23 @@ export const VirServiceAuthTokenEntry = defineElement<{
             `;
         });
 
+        const tokenDescription = tokenDescriptions[inputs.serviceName];
+
+        const permissionRows = tokenDescription.permissions.map(
+            (permission) => html`
+                <tr>
+                    <td>${permission.label}</td>
+                    <td>${permission.value}</td>
+                </tr>
+            `,
+        );
+
         return html`
             <h2>${inputs.serviceName}</h2>
+            <section class="description">
+                <p>${tokenDescription.intro}</p>
+                <table>${permissionRows}</table>
+            </section>
             <section class="tokens">${authTokenTemplates}</section>
             <${ViraButton.assign({
                 text: 'Add',
