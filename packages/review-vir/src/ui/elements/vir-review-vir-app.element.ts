@@ -53,10 +53,13 @@ export const VirReviewVirApp = defineElementNoInputs({
     `,
     stateInitStatic: {
         serviceAuthTokens: asyncProp({
-            updateCallback(
-                {secretEncryptionKey}: {secretEncryptionKey: string | undefined},
-                {webClientInterface}: {webClientInterface: WebClientInterface},
-            ) {
+            updateCallback({
+                secretEncryptionKey,
+                webClientInterface,
+            }: {
+                secretEncryptionKey: string | undefined;
+                webClientInterface: WebClientInterface;
+            }) {
                 if (!secretEncryptionKey) {
                     throw new Error('No encryption key.');
                 }
@@ -88,10 +91,10 @@ export const VirReviewVirApp = defineElementNoInputs({
             `;
         }
 
-        state.serviceAuthTokens.updateTrigger(
-            {secretEncryptionKey: globalVars.encryptionKey},
-            {webClientInterface: webClientInterface},
-        );
+        state.serviceAuthTokens.update({
+            secretEncryptionKey: globalVars.encryptionKey,
+            webClientInterface,
+        });
         const serviceAuthTokens = state.serviceAuthTokens.value;
 
         if (!isResolved(serviceAuthTokens)) {
@@ -130,7 +133,7 @@ export const VirReviewVirApp = defineElementNoInputs({
                                       authTokensByService: event.detail,
                                   });
 
-                                  state.serviceAuthTokens.setResolvedValue(event.detail);
+                                  state.serviceAuthTokens.setValue(event.detail);
                               },
                           )}
                       ></${VirAuthTokenEntryMainPage}>

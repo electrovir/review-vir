@@ -6,6 +6,7 @@ import {
     ViraButtonStyleEnum,
     ViraIcon,
     ViraInput,
+    ViraInputType,
     noNativeFormStyles,
     noNativeSpacing,
 } from 'vira';
@@ -118,6 +119,7 @@ export const VirServiceAuthTokenEntry = defineElement<{
                         <div class="with-delete-wrapper">
                             <${ViraInput.assign({
                                 value: authToken.authTokenSecret,
+                                type: ViraInputType.Password,
                             })}
                                 ${listen(ViraInput.events.valueChange, (event) => {
                                     modifyAuthToken('authTokenSecret', event.detail);
