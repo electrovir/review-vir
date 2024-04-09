@@ -13,9 +13,14 @@ import {
 } from '../github-graphql-queries/github-graphql-queries';
 import {parseGithubSearchPullRequest, parseGithubUser} from './parse-github-data';
 
+let costTooHigh = false;
+
 export async function fetchGithubData(
     authTokens: ReadonlyArray<Readonly<AuthToken>>,
 ): Promise<GitData> {
+    if (costTooHigh) {
+        throw new Error('Refusing to fetch because GraphQL query cost is too high.');
+    }
     const authTokenSettledResponses = await Promise.allSettled(
         authTokens.flatMap((authToken) => {
             return [
@@ -45,9 +50,10 @@ export async function fetchGithubData(
 
                     if (isError(value)) {
                         return [value];
-                    }
-
-                    if (!user) {
+                    } else if (value.data.rateLimit.cost > 1) {
+                        costTooHigh = true;
+                        throw new Error(`GraphQL query cost is too high.`);
+                    } else if (!user) {
                         user = parseGithubUser(value.data.viewer);
                     }
                     return value.data.search.nodes.map((rawPullRequest) => {
@@ -57,6 +63,7 @@ export async function fetchGithubData(
                             value.authTokenName,
                             rawPullRequest,
                             user,
+                            value.data.rateLimit,
                         );
                     });
                 } else {
@@ -107,7 +114,7 @@ export async function fetchGithubData(
         throw new Error('User was never parsed from the GitHub GraphQL response.');
     }
 
-    console.log(pullRequests);
+    console.log(pullRequests.filter((entry) => (entry as PullRequest).id.prNumber === '619')[0]);
 
     return {pullRequests, user};
 }

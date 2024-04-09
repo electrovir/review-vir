@@ -46,6 +46,10 @@ export const VirPullRequest = defineElement<{
             gap: 4px;
         }
 
+        .big-gap {
+            gap: 16px;
+        }
+
         .center {
             align-items: center;
         }
@@ -166,6 +170,12 @@ export const VirPullRequest = defineElement<{
             ? undefined
             : inputs.pullRequest.branches.targetBranch.branchName;
 
+        /** Note that only a max of 100 comments can be counted at once. */
+        const resolvedCommentsString = [
+            inputs.pullRequest.status.comments.resolved,
+            inputs.pullRequest.status.comments.total,
+        ].join(' / ');
+
         return html`
             ${renderIf(
                 inputs.nested,
@@ -222,25 +232,32 @@ export const VirPullRequest = defineElement<{
                         </div>
                     `,
                 )}
-                <div class="subtitle faint">
-                    <span
-                        class="additions"
-                        title=${`${inputs.pullRequest.changes.additions} added lines`}
-                    >
-                        +${inputs.pullRequest.changes.additions}
-                    </span>
-                    <span
-                        class="deletions"
-                        title=${`${inputs.pullRequest.changes.deletions} deleted lines`}
-                    >
-                        -${inputs.pullRequest.changes.deletions}
-                    </span>
-                    <span
-                        class="changed-files"
-                        title=${`${inputs.pullRequest.changes.changedFiles} changed files`}
-                    >
-                        &nbsp;${inputs.pullRequest.changes.changedFiles}
-                    </span>
+                <div class="subtitle columns big-gap faint">
+                    <div>
+                        <span
+                            class="additions"
+                            title=${`${inputs.pullRequest.changes.additions} added lines`}
+                        >
+                            +${inputs.pullRequest.changes.additions}
+                        </span>
+                        <span
+                            class="deletions"
+                            title=${`${inputs.pullRequest.changes.deletions} deleted lines`}
+                        >
+                            -${inputs.pullRequest.changes.deletions}
+                        </span>
+                        <span
+                            class="changed-files"
+                            title=${`${inputs.pullRequest.changes.changedFiles} changed files`}
+                        >
+                            &nbsp;${inputs.pullRequest.changes.changedFiles}
+                        </span>
+                    </div>
+                    <div>
+                        <span title=${`${resolvedCommentsString} comments resolved`}>
+                            ${resolvedCommentsString}
+                        </span>
+                    </div>
                 </div>
             </div>
         `;

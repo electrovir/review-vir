@@ -1,5 +1,12 @@
 import {fullDateShape} from 'date-vir';
-import {classShape, defineShape, enumShape, indexedKeys, or} from 'object-shape-tester';
+import {
+    classShape,
+    defineShape,
+    enumShape,
+    indexedKeys,
+    or,
+    unknownShape,
+} from 'object-shape-tester';
 import {SupportedServiceName} from '../auth-tokens';
 import {gitBranchShape} from './git-branch';
 import {userShape} from './user';
@@ -61,7 +68,10 @@ export const pullRequestShape = defineShape({
     },
     status: {
         checksStatus: or(pullRequestChecksShape, classShape(Error)),
-        commentCount: 0,
+        comments: {
+            resolved: 0,
+            total: 0,
+        },
         commitCount: 0,
         mergeStatus: enumShape(PullRequestMergeStatus),
         mergedBy: or(undefined, userShape),
@@ -91,6 +101,7 @@ export const pullRequestShape = defineShape({
             required: false,
         }),
     },
+    cost: unknownShape(),
 });
 
 export type PullRequest = typeof pullRequestShape.runTimeType;

@@ -153,6 +153,13 @@ export const githubPullRequestSearchResponseShape = defineShape(
         mergedAt: or(null, ''),
         mergedBy: or(null, githubUserSearchResponseShape),
         number: 0,
+        reviewThreads: {
+            nodes: [
+                {
+                    isResolved: false,
+                },
+            ],
+        },
         /**
          * Comment reviews don't show up in `latestOpinionatedReviews` so much be extracted from
          * here.
@@ -187,7 +194,6 @@ export const githubPullRequestSearchResponseShape = defineShape(
             ],
         },
         title: '',
-        totalCommentsCount: 0,
         updatedAt: '',
         url: '',
     },
@@ -226,6 +232,9 @@ export const githubPullRequestGraphqlResponseShape = defineShape(
     },
     true,
 );
+
+export type GithubPullRequestGraphqlResponse =
+    typeof githubPullRequestGraphqlResponseShape.runTimeType;
 
 /**
  * This query determines the above shape definition. If this query changes, make sure to change that
@@ -298,7 +307,6 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                         avatarUrl
                         url
                     }
-                    totalCommentsCount
                     baseRef {
                         target {
                             oid
@@ -334,6 +342,11 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                             login
                             avatarUrl
                             url
+                        }
+                    }
+                    reviewThreads(first: 100) {
+                        nodes {
+                            isResolved
                         }
                     }
                     latestReviews(first: 10) {

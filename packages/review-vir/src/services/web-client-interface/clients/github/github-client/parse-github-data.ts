@@ -16,6 +16,7 @@ import {
 import {User} from '../../../../../data/git/user';
 import {
     GithubGraphqlReviewState,
+    GithubPullRequestGraphqlResponse,
     GithubRunCheckState,
     GithubSearchPullRequest,
     GithubUserSearchResponse,
@@ -28,6 +29,7 @@ export function parseGithubSearchPullRequest(
     authTokenName: string,
     raw: Readonly<GithubSearchPullRequest>,
     currentUser: Readonly<User>,
+    rateLimit: Readonly<GithubPullRequestGraphqlResponse['data']['rateLimit']>,
 ): PullRequest {
     const dates = {
         closed: raw.closedAt ? createFullDateInUserTimezone(raw.closedAt) : undefined,
@@ -99,7 +101,7 @@ export function parseGithubSearchPullRequest(
             checksStatus: parseStates(
                 raw.commits.nodes[0]?.commit?.statusCheckRollup?.contexts?.checkRunCountsByState,
             ),
-            commentCount: raw.totalCommentsCount,
+            comments: parseComments(raw.reviewThreads.nodes),
             commitCount: raw.commits.totalCount,
             mergeStatus,
             mergedBy: raw.mergedBy ? parseGithubUser(raw.mergedBy) : undefined,
@@ -110,8 +112,24 @@ export function parseGithubSearchPullRequest(
             ),
         },
         users: pullRequestUsers,
+        cost: rateLimit,
     };
     return pullRequest;
+}
+
+function parseComments(
+    commentNodes: GithubSearchPullRequest['reviewThreads']['nodes'],
+): PullRequest['status']['comments'] {
+    return commentNodes.reduce(
+        (accum, current) => {
+            if (current.isResolved) {
+                accum.resolved++;
+            }
+            accum.total++;
+            return accum;
+        },
+        {resolved: 0, total: 0},
+    );
 }
 
 function determineIfNeedsReviewFromCurrentUser(
