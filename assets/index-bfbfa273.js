@@ -710,7 +710,7 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
                 <a href=${a} rel="noopener noreferrer" ${q("click",n)}>
                     <slot></slot>
                 </a>
-            `}}});var ut=(t=>(t.Github="github",t))(ut||{});const s1=ue({authTokenName:"",authTokenSecret:""},!0),Qc=ue(Xt({keys:ln(ut),values:[s1],required:!1}),!0);class Js extends Error{constructor(r,n,s){super(`${r} at index '${s}' in service '${n}'`);xr(this,"name","AuthTokenValidationError");this.serviceName=n,this.authTokenIndex=s}}function i1(t){Ou(t,Qc),K(t).forEach(e=>{const r=t[e];r==null||r.forEach((n,s)=>{if(n.authTokenName){if(!n.authTokenSecret)throw new Js("Empty auth token secret",e,s)}else throw new Js("Empty auth token name",e,s)})})}const Wr=typeof{}>"u"?void 0:{},a1="6rbd4mt4p4ve83gfijfcpxaoehmrux53",nl={devAuthTokens:Cu(Wr==null?void 0:Wr.authTokens,Qc)?Wr.authTokens:{},encryptionKey:a1};var rt=(t=>(t.Auth="auth",t.PullRequests="pull-requests",t))(rt||{});const mr={hash:void 0,paths:["pull-requests"],search:void 0};function o1(){return n1({routeBase:"review-vir",routeSanitizer(t){return{paths:l1(t.paths),hash:void 0,search:void 0}}})}function l1(t){const e=t[0];return kd(e,rt)?[e]:mr.paths}const u1="modulepreload",c1=function(t){return"/review-vir/"+t},sl={},il=function(e,r,n){if(!r||r.length===0)return e();const s=document.getElementsByTagName("link");return Promise.all(r.map(i=>{if(i=c1(i),i in sl)return;sl[i]=!0;const a=i.endsWith(".css"),o=a?'[rel="stylesheet"]':"";if(!!n)for(let c=s.length-1;c>=0;c--){const d=s[c];if(d.href===i&&(!a||d.rel==="stylesheet"))return}else if(document.querySelector(`link[href="${i}"]${o}`))return;const u=document.createElement("link");if(u.rel=a?"stylesheet":u1,a||(u.as="script",u.crossOrigin=""),u.href=i,document.head.appendChild(u),a)return new Promise((c,d)=>{u.addEventListener("load",c),u.addEventListener("error",()=>d(new Error(`Unable to preload CSS for ${i}`)))})})).then(()=>e()).catch(i=>{const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=i,window.dispatchEvent(a),!a.defaultPrevented)throw i})},d1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function f1(t,e){return t?d1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function al(t){let e;try{e=Reflect.ownKeys(t)}catch{}return e??[...Object.keys(t),...Object.getOwnPropertySymbols(t)]}var ol;(function(t){t.Upper="upper",t.Lower="lower"})(ol||(ol={}));var ll;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(ll||(ll={}));function h1(t){return!!t&&typeof t=="object"}function m1(t,e){let r=!1;const n=al(t).reduce((s,i)=>{const a=e(i,t[i],t);return a instanceof Promise&&(r=!0),{...s,[i]:a}},{});return r?new Promise(async(s,i)=>{try{await Promise.all(al(n).map(async a=>{const o=await n[a];n[a]=o})),s(n)}catch(a){i(a)}}):n}function p1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}p1();function g1(t){return h1(t)&&f1(t,"liveClient")&&R(t.liveClient,"function")}function rw(t){return{liveClient(){return typeof t=="function"?t():t}}}const w1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function y1(t,e){return t?w1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function b1(t,e){return t.includes(e)}var ul;(function(t){t.Upper="upper",t.Lower="lower"})(ul||(ul={}));var cl;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(cl||(cl={}));function v1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}v1();const E1=Symbol("set-mock-return-value"),Ts=Symbol("get-last-called-args"),S1=["then","catch","finally"];function ed(){const t={},e=()=>{};function r(n){return n in t||(t[n]=ed()),t[n]}return new Proxy(e,{get:(n,s)=>s===Ts?t[Ts]:b1(S1,s)&&!y1(t,s)?void 0:r(s),apply:(n,s,i)=>(t[Ts]=i,r(E1)),set:(n,s,i)=>(t[s]=i,!0),has(n,s){return s in t}})}async function T1(t,e){const r=await t(),n=Object.values(r).find(g1);if(!n)throw new Error(`Failed to find any client definitions exported for client '${e}'`);return await n.liveClient()}function M1({clientImports:t,isTestEnv:e,mockClients:r}){const n={};let s;return Object.entries(t).forEach(([i,a])=>{Object.defineProperty(n,i,{async get(){if(e){if(r&&(s||(s=typeof r=="function"?await r():r),s&&i in s)){const o=s[i];if(!o)throw new Error(`Mock client for '${i}' is not defined.`);return await o}return ed()}else return await T1(a,i)}})}),n}async function $1(t){return m1(t,async(r,n)=>{try{return await n}catch(s){console.error(`Failed to await client '${String(r)}':`,s);return}})}const k1=M1({clientImports:{github:()=>il(()=>import("./github.client-a9177bbb.js"),["assets/github.client-a9177bbb.js","assets/index-f4dd668f.js"]),authStore:()=>il(()=>import("./auth-store.client-583071f2.js"),["assets/auth-store.client-583071f2.js","assets/index-f4dd668f.js"])},isTestEnv:!1});async function A1(){return $1(k1)}const Ks=vi()("change-route"),dl=be()({tagName:"vir-app-tabs",styles:P`
+            `}}});var ut=(t=>(t.Github="github",t))(ut||{});const s1=ue({authTokenName:"",authTokenSecret:""},!0),Qc=ue(Xt({keys:ln(ut),values:[s1],required:!1}),!0);class Js extends Error{constructor(r,n,s){super(`${r} at index '${s}' in service '${n}'`);xr(this,"name","AuthTokenValidationError");this.serviceName=n,this.authTokenIndex=s}}function i1(t){Ou(t,Qc),K(t).forEach(e=>{const r=t[e];r==null||r.forEach((n,s)=>{if(n.authTokenName){if(!n.authTokenSecret)throw new Js("Empty auth token secret",e,s)}else throw new Js("Empty auth token name",e,s)})})}const Wr=typeof{}>"u"?void 0:{},a1="6rbd4mt4p4ve83gfijfcpxaoehmrux53",nl={devAuthTokens:Cu(Wr==null?void 0:Wr.authTokens,Qc)?Wr.authTokens:{},encryptionKey:a1};var rt=(t=>(t.Auth="auth",t.PullRequests="pull-requests",t))(rt||{});const mr={hash:void 0,paths:["pull-requests"],search:void 0};function o1(){return n1({routeBase:"review-vir",routeSanitizer(t){return{paths:l1(t.paths),hash:void 0,search:void 0}}})}function l1(t){const e=t[0];return kd(e,rt)?[e]:mr.paths}const u1="modulepreload",c1=function(t){return"/review-vir/"+t},sl={},il=function(e,r,n){if(!r||r.length===0)return e();const s=document.getElementsByTagName("link");return Promise.all(r.map(i=>{if(i=c1(i),i in sl)return;sl[i]=!0;const a=i.endsWith(".css"),o=a?'[rel="stylesheet"]':"";if(!!n)for(let c=s.length-1;c>=0;c--){const d=s[c];if(d.href===i&&(!a||d.rel==="stylesheet"))return}else if(document.querySelector(`link[href="${i}"]${o}`))return;const u=document.createElement("link");if(u.rel=a?"stylesheet":u1,a||(u.as="script",u.crossOrigin=""),u.href=i,document.head.appendChild(u),a)return new Promise((c,d)=>{u.addEventListener("load",c),u.addEventListener("error",()=>d(new Error(`Unable to preload CSS for ${i}`)))})})).then(()=>e()).catch(i=>{const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=i,window.dispatchEvent(a),!a.defaultPrevented)throw i})},d1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function f1(t,e){return t?d1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function al(t){let e;try{e=Reflect.ownKeys(t)}catch{}return e??[...Object.keys(t),...Object.getOwnPropertySymbols(t)]}var ol;(function(t){t.Upper="upper",t.Lower="lower"})(ol||(ol={}));var ll;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(ll||(ll={}));function h1(t){return!!t&&typeof t=="object"}function m1(t,e){let r=!1;const n=al(t).reduce((s,i)=>{const a=e(i,t[i],t);return a instanceof Promise&&(r=!0),{...s,[i]:a}},{});return r?new Promise(async(s,i)=>{try{await Promise.all(al(n).map(async a=>{const o=await n[a];n[a]=o})),s(n)}catch(a){i(a)}}):n}function p1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}p1();function g1(t){return h1(t)&&f1(t,"liveClient")&&R(t.liveClient,"function")}function rw(t){return{liveClient(){return typeof t=="function"?t():t}}}const w1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function y1(t,e){return t?w1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function b1(t,e){return t.includes(e)}var ul;(function(t){t.Upper="upper",t.Lower="lower"})(ul||(ul={}));var cl;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(cl||(cl={}));function v1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}v1();const E1=Symbol("set-mock-return-value"),Ts=Symbol("get-last-called-args"),S1=["then","catch","finally"];function ed(){const t={},e=()=>{};function r(n){return n in t||(t[n]=ed()),t[n]}return new Proxy(e,{get:(n,s)=>s===Ts?t[Ts]:b1(S1,s)&&!y1(t,s)?void 0:r(s),apply:(n,s,i)=>(t[Ts]=i,r(E1)),set:(n,s,i)=>(t[s]=i,!0),has(n,s){return s in t}})}async function T1(t,e){const r=await t(),n=Object.values(r).find(g1);if(!n)throw new Error(`Failed to find any client definitions exported for client '${e}'`);return await n.liveClient()}function M1({clientImports:t,isTestEnv:e,mockClients:r}){const n={};let s;return Object.entries(t).forEach(([i,a])=>{Object.defineProperty(n,i,{async get(){if(e){if(r&&(s||(s=typeof r=="function"?await r():r),s&&i in s)){const o=s[i];if(!o)throw new Error(`Mock client for '${i}' is not defined.`);return await o}return ed()}else return await T1(a,i)}})}),n}async function $1(t){return m1(t,async(r,n)=>{try{return await n}catch(s){console.error(`Failed to await client '${String(r)}':`,s);return}})}const k1=M1({clientImports:{github:()=>il(()=>import("./github.client-09bca403.js"),["assets/github.client-09bca403.js","assets/index-f4dd668f.js"]),authStore:()=>il(()=>import("./auth-store.client-5d892a88.js"),["assets/auth-store.client-5d892a88.js","assets/index-f4dd668f.js"])},isTestEnv:!1});async function A1(){return $1(k1)}const Ks=vi()("change-route"),dl=be()({tagName:"vir-app-tabs",styles:P`
         :host {
             display: flex;
             border-bottom: 1px solid #ddd;
@@ -884,7 +884,7 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
                     ${q("click",()=>{try{i1(e.currentAuthTokenEntry)}catch(a){a instanceof Js?r({errorMessage:{message:a.message,authTokenIndex:a.authTokenIndex,serviceName:a.serviceName}}):r({errorMessage:nt(a)});return}n(new s.authTokensByServiceChange(e.currentAuthTokenEntry)),n(new Ks({route:mr}))})}
                 ></${St}>
             </section>
-        `}}),Mt=ue({username:"",profileUrl:"",avatarUrl:""},!0),O1=ue({repoName:"",repoOwner:Mt,htmlUrl:"",isPrivate:!1,isArchived:!1},!0),fl=ue({repo:O1,branchName:Qt("",_s(Error)),headCommitHash:Qt("",_s(Error))},!0);var Ke=(t=>(t.Draft="draft",t.Merged="merged",t.Open="open",t.Rejected="rejected",t))(Ke||{}),Oi=(t=>(t.Accepted="accepted",t.Rejected="rejected",t))(Oi||{});const L1=ue({successCount:0,failCount:0,inProgressCount:0,totalCount:0},!0),N1=ue({user:Mt,reviewStatus:ln(Oi)},!0),nw=ue({id:{htmlUrl:"",prId:"",prNumber:"",title:"",owner:Mt},auth:{client:ln(ut),tokenName:""},branches:{headBranch:fl,targetBranch:fl},dates:{created:ns,lastUpdated:ns,closed:Qt(void 0,ns)},status:{checksStatus:Qt(L1,_s(Error)),comments:{resolved:0,total:0},commitCount:0,mergeStatus:ln(Ke),mergedBy:Qt(void 0,Mt),needsReviewFromCurrentUser:!1,labels:[{name:"",color:""}]},changes:{additions:0,deletions:0,changedFiles:0},users:{reviewers:{submitted:Xt({keys:"",values:N1,required:!1}),pending:Xt({keys:"",values:Mt,required:!1})},assignees:Xt({keys:"",values:Mt,required:!1})},cost:xu()});function P1(t,e){const r={};return e.forEach(n=>{const s=n.id.owner,i=Qs(r,s.username,()=>({owner:s,pullRequests:{assigned:[],closed:[],reviewer:[]}}));n.status.mergeStatus===Ke.Merged||n.status.mergeStatus===Ke.Rejected?i.pullRequests.closed.push(n):t.username in n.users.assignees?i.pullRequests.assigned.push(n):i.pullRequests.reviewer.push(n)}),Object.values(r).forEach(n=>{n.pullRequests.assigned.sort((s,i)=>mt(s.dates.created)-mt(i.dates.created)),n.pullRequests.reviewer.sort((s,i)=>mt(i.dates.lastUpdated)-mt(s.dates.lastUpdated)).sort((s,i)=>{if(s.status.mergeStatus!==i.status.mergeStatus){if(s.status.mergeStatus===Ke.Draft)return 1;if(i.status.mergeStatus===Ke.Draft)return-1}return 0}).sort((s,i)=>s.status.needsReviewFromCurrentUser===i.status.needsReviewFromCurrentUser?0:s.status.needsReviewFromCurrentUser?-1:1),n.pullRequests.closed.sort((s,i)=>{if(s.dates.closed){if(!i.dates.closed)return 1}else return-1;return mt(i.dates.closed)-mt(s.dates.closed)})}),r}class sw extends pe()("pull-requests-resolved"){}class iw extends pe()("custom-error"){}class aw extends pe()("pull-requests-update-started"){}class _1 extends pe()("pull-requests-change"){}function I1(t){const e=t.reduce((r,n)=>{const s=n.branches.headBranch.branchName,i=s instanceof Error?"":s;return Qs(r,i,()=>[]).push({pullRequest:n,children:[],isChained:!1}),r},{});return Object.values(e).forEach(r=>{r.forEach(n=>{const s=n.pullRequest.branches.targetBranch.branchName;if(s instanceof Error)return;const i=e[s];i&&(n.isChained=!0,i.forEach(a=>{a.children.push(n)}))})}),Object.values(e).flat().filter(r=>!r.isChained)}const We=be()({tagName:"vir-user",styles:P`
+        `}}),Mt=ue({username:"",profileUrl:"",avatarUrl:""},!0),O1=ue({repoName:"",repoOwner:Mt,htmlUrl:"",isPrivate:!1,isArchived:!1},!0),fl=ue({repo:O1,branchName:Qt("",_s(Error)),headCommitHash:Qt("",_s(Error))},!0);var Ke=(t=>(t.Draft="draft",t.Merged="merged",t.Open="open",t.Rejected="rejected",t))(Ke||{}),Oi=(t=>(t.Accepted="accepted",t.Rejected="rejected",t))(Oi||{});const L1=ue({successCount:0,failCount:0,inProgressCount:0,totalCount:0},!0),N1=ue({user:Mt,reviewStatus:ln(Oi)},!0),nw=ue({id:{htmlUrl:"",prId:"",prNumber:"",title:"",owner:Mt},auth:{client:ln(ut),tokenName:""},branches:{headBranch:fl,targetBranch:fl},dates:{created:ns,lastUpdated:ns,closed:Qt(void 0,ns)},status:{checksStatus:Qt(L1,_s(Error)),comments:{resolved:0,total:0},commitCount:0,mergeStatus:ln(Ke),mergedBy:Qt(void 0,Mt),needsReviewFromCurrentUser:!1,labels:[{name:"",color:""}],hasMergeConflicts:!1},changes:{additions:0,deletions:0,changedFiles:0},users:{reviewers:{submitted:Xt({keys:"",values:N1,required:!1}),pending:Xt({keys:"",values:Mt,required:!1})},assignees:Xt({keys:"",values:Mt,required:!1})},cost:xu()});function P1(t,e){const r={};return e.forEach(n=>{const s=n.id.owner,i=Qs(r,s.username,()=>({owner:s,pullRequests:{assigned:[],closed:[],reviewer:[]}}));n.status.mergeStatus===Ke.Merged||n.status.mergeStatus===Ke.Rejected?i.pullRequests.closed.push(n):t.username in n.users.assignees?i.pullRequests.assigned.push(n):i.pullRequests.reviewer.push(n)}),Object.values(r).forEach(n=>{n.pullRequests.assigned.sort((s,i)=>mt(s.dates.created)-mt(i.dates.created)),n.pullRequests.reviewer.sort((s,i)=>mt(i.dates.lastUpdated)-mt(s.dates.lastUpdated)).sort((s,i)=>{if(s.status.mergeStatus!==i.status.mergeStatus){if(s.status.mergeStatus===Ke.Draft)return 1;if(i.status.mergeStatus===Ke.Draft)return-1}return 0}).sort((s,i)=>s.status.needsReviewFromCurrentUser===i.status.needsReviewFromCurrentUser?0:s.status.needsReviewFromCurrentUser?-1:1),n.pullRequests.closed.sort((s,i)=>{if(s.dates.closed){if(!i.dates.closed)return 1}else return-1;return mt(i.dates.closed)-mt(s.dates.closed)})}),r}class sw extends pe()("pull-requests-resolved"){}class iw extends pe()("custom-error"){}class aw extends pe()("pull-requests-update-started"){}class _1 extends pe()("pull-requests-change"){}function I1(t){const e=t.reduce((r,n)=>{const s=n.branches.headBranch.branchName,i=s instanceof Error?"":s;return Qs(r,i,()=>[]).push({pullRequest:n,children:[],isChained:!1}),r},{});return Object.values(e).forEach(r=>{r.forEach(n=>{const s=n.pullRequest.branches.targetBranch.branchName;if(s instanceof Error)return;const i=e[s];i&&(n.isChained=!0,i.forEach(a=>{a.children.push(n)}))})}),Object.values(e).flat().filter(r=>!r.isChained)}const We=be()({tagName:"vir-user",styles:P`
         a {
             display: flex;
             align-items: center;
@@ -955,6 +955,7 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
         `}}),hl=be()({tagName:"vir-pull-request",styles:P`
         :host {
             display: flex;
+            overflow: hidden;
         }
 
         a {
@@ -968,12 +969,14 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
             display: flex;
             flex-direction: column;
             gap: 4px;
+            overflow: hidden;
         }
 
         .columns {
             display: flex;
             flex-direction: row;
             gap: 4px;
+            overflow: hidden;
         }
 
         .big-gap {
@@ -1006,6 +1009,12 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
             display: flex;
             gap: 8px;
             align-items: center;
+        }
+
+        .branch-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .subtitle {
@@ -1051,7 +1060,11 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
             color: black;
         }
 
-        .nested {
+        .no-shrink {
+            flex-shrink: 0;
+        }
+
+        .nested-arrow {
             flex-shrink: 0;
             color: #ccc;
             height: 40px;
@@ -1065,14 +1078,14 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
             user-select: all;
             -webkit-user-select: all;
         }
-    `,renderCallback({inputs:t}){const e=Object.values(t.pullRequest.users.assignees).filter(Mn),r=t.pullRequest.status.checksStatus instanceof Error?"error":t.pullRequest.status.checksStatus.failCount?"fail":t.pullRequest.status.checksStatus.inProgressCount?"inProgress":"success",n=t.pullRequest.status.checksStatus instanceof Error?["Error",nt(t.pullRequest.status.checksStatus)].join(": "):t.pullRequest.status.checksStatus.failCount?[t.pullRequest.status.checksStatus.failCount,"checks failed."].join(" "):t.pullRequest.status.checksStatus.inProgressCount?[t.pullRequest.status.checksStatus.inProgressCount,"check in progress."].join(" "):"All checks passed.",s=dn(t.pullRequest.branches.headBranch.branchName)?void 0:t.pullRequest.branches.headBranch.branchName,i=dn(t.pullRequest.branches.targetBranch.branchName)?void 0:t.pullRequest.branches.targetBranch.branchName,a=[t.pullRequest.status.comments.resolved,t.pullRequest.status.comments.total].join(" / "),o=t.pullRequest.status.labels.map(l=>{const u=P`
+    `,renderCallback({inputs:t}){const e=Object.values(t.pullRequest.users.assignees).filter(Mn),r=t.pullRequest.status.checksStatus instanceof Error||t.pullRequest.status.hasMergeConflicts?"error":t.pullRequest.status.checksStatus.failCount?"fail":t.pullRequest.status.checksStatus.inProgressCount?"inProgress":"success",n=t.pullRequest.status.hasMergeConflicts?"Has Merge Conflicts":t.pullRequest.status.checksStatus instanceof Error?["Error",nt(t.pullRequest.status.checksStatus)].join(": "):t.pullRequest.status.checksStatus.failCount?[t.pullRequest.status.checksStatus.failCount,"checks failed."].join(" "):t.pullRequest.status.checksStatus.inProgressCount?[t.pullRequest.status.checksStatus.inProgressCount,"check in progress."].join(" "):"All checks passed.",s=dn(t.pullRequest.branches.headBranch.branchName)?void 0:t.pullRequest.branches.headBranch.branchName,i=dn(t.pullRequest.branches.targetBranch.branchName)?void 0:t.pullRequest.branches.targetBranch.branchName,a=[t.pullRequest.status.comments.resolved,t.pullRequest.status.comments.total].join(" / "),o=t.pullRequest.status.labels.map(l=>{const u=P`
                 background-color: ${he(l.color)};
                 color: ${he(R1(l.color))};
             `;return y`
                 <span class="label" style=${u}>${l.name}</span>
             `});return y`
             ${Je(t.nested,y`
-                    <div class="nested">↱</div>
+                    <div class="nested-arrow">↱</div>
                 `)}
             <div
                 class="pull-request rows grow ${Hn({"needs-review":t.pullRequest.status.needsReviewFromCurrentUser,"is-draft":t.pullRequest.status.mergeStatus===Ke.Draft})}"
@@ -1080,7 +1093,7 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
                 <div class="columns title">
                     <div class="rows grow">
                         <div class="columns center">
-                            <span class="faint">
+                            <span class="faint no-shrink">
                                 <a href=${t.pullRequest.branches.headBranch.repo.htmlUrl}>
                                     ${t.pullRequest.branches.headBranch.repo.repoName}
                                 </a>
@@ -1092,6 +1105,23 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
                                 ></${_}>
                                 <${Gr.assign({users:e,overlap:!0})}></${Gr}>
                             </div>
+                            ${Je(!!(s||i),y`
+                                    <div class="center columns subtitle faint">
+                                        <span
+                                            class="branch-name select-all"
+                                            title=${i}
+                                        >
+                                            ${i}
+                                        </span>
+                                        ←
+                                        <span
+                                            class="branch-name select-all"
+                                            title=${s}
+                                        >
+                                            ${s}
+                                        </span>
+                                    </div>
+                                `)}
                         </div>
                         <a href=${t.pullRequest.id.htmlUrl}>
                             <b>#${t.pullRequest.id.prNumber}:</b>
@@ -1100,13 +1130,6 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
                     </div>
                     <${Gr.assign({...D1(t.pullRequest.users.reviewers),overlap:!1,holdStatusSpace:!0})}></${Gr}>
                 </div>
-                ${Je(!!(s||i),y`
-                        <div class="subtitle faint">
-                            <span class="select-all">${i}</span>
-                            ←
-                            <span class="select-all">${s}</span>
-                        </div>
-                    `)}
                 <div class="subtitle columns big-gap faint">
                     <div>
                         <span
