@@ -1,5 +1,5 @@
 import {extractErrorMessage, isTruthy} from '@augment-vir/common';
-import {classMap, css, defineElement, html, isError, renderIf} from 'element-vir';
+import {classMap, css, defineElement, html, isError, renderIf, unsafeCSS} from 'element-vir';
 import {Writable} from 'type-fest';
 import {
     StatusFailure24Icon,
@@ -14,6 +14,7 @@ import {
     PullRequestReviewStatus,
 } from '../../../../../data/git/pull-request';
 import {User} from '../../../../../data/git/user';
+import {calculateTextColor} from '../../../../../util/color';
 import {VirUsers} from '../../../common-elements/vir-users.element';
 
 export const VirPullRequest = defineElement<{
@@ -114,6 +115,13 @@ export const VirPullRequest = defineElement<{
             gap: 4px;
         }
 
+        .label {
+            opacity: 0.5;
+            padding: 1px 8px;
+            border-radius: 16px;
+            color: black;
+        }
+
         .nested {
             flex-shrink: 0;
             color: #ccc;
@@ -175,6 +183,16 @@ export const VirPullRequest = defineElement<{
             inputs.pullRequest.status.comments.resolved,
             inputs.pullRequest.status.comments.total,
         ].join(' / ');
+
+        const labelTemplates = inputs.pullRequest.status.labels.map((label) => {
+            const style = css`
+                background-color: ${unsafeCSS(label.color)};
+                color: ${unsafeCSS(calculateTextColor(label.color))};
+            `;
+            return html`
+                <span class="label" style=${style}>${label.name}</span>
+            `;
+        });
 
         return html`
             ${renderIf(
@@ -263,6 +281,7 @@ export const VirPullRequest = defineElement<{
                             ${inputs.pullRequest.status.commitCount}
                         </span>
                     </div>
+                    <div>${labelTemplates}</div>
                 </div>
             </div>
         `;

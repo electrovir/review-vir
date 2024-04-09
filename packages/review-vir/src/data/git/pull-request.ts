@@ -76,6 +76,12 @@ export const pullRequestShape = defineShape({
         mergeStatus: enumShape(PullRequestMergeStatus),
         mergedBy: or(undefined, userShape),
         needsReviewFromCurrentUser: false,
+        labels: [
+            {
+                name: '',
+                color: '',
+            },
+        ],
     },
     changes: {
         additions: 0,

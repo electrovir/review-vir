@@ -103,6 +103,18 @@ export const githubPullRequestSearchResponseShape = defineShape(
                 },
             },
         ),
+        labels: or(
+            /** `null` means no labels */
+            null,
+            {
+                nodes: [
+                    {
+                        name: '',
+                        color: '',
+                    },
+                ],
+            },
+        ),
         baseRepository: {
             name: '',
             owner: githubUserSearchResponseShape,
@@ -318,6 +330,12 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                             oid
                         }
                         name
+                    }
+                    labels(first: 100) {
+                        nodes {
+                            color
+                            name
+                        }
                     }
                     commits(last: 1) {
                         totalCount

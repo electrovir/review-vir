@@ -110,6 +110,14 @@ export function parseGithubSearchPullRequest(
                 currentUser,
                 pullRequestUsers,
             ),
+            labels: raw.labels
+                ? raw.labels.nodes.map((node) => {
+                      return {
+                          ...node,
+                          color: `#${node.color}`,
+                      };
+                  })
+                : [],
         },
         users: pullRequestUsers,
         cost: rateLimit,
