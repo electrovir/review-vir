@@ -82,6 +82,7 @@ export const pullRequestShape = defineShape({
                 color: '',
             },
         ],
+        hasMergeConflicts: false,
     },
     changes: {
         additions: 0,

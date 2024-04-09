@@ -16,6 +16,7 @@ import {
 import {User} from '../../../../../data/git/user';
 import {
     GithubGraphqlReviewState,
+    GithubMergeableState,
     GithubPullRequestGraphqlResponse,
     GithubRunCheckState,
     GithubSearchPullRequest,
@@ -110,6 +111,7 @@ export function parseGithubSearchPullRequest(
                 currentUser,
                 pullRequestUsers,
             ),
+            hasMergeConflicts: raw.mergeable === GithubMergeableState.Conflicting,
             labels: raw.labels
                 ? raw.labels.nodes.map((node) => {
                       return {

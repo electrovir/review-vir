@@ -26,6 +26,7 @@ export const VirPullRequest = defineElement<{
     styles: css`
         :host {
             display: flex;
+            overflow: hidden;
         }
 
         a {
@@ -39,12 +40,14 @@ export const VirPullRequest = defineElement<{
             display: flex;
             flex-direction: column;
             gap: 4px;
+            overflow: hidden;
         }
 
         .columns {
             display: flex;
             flex-direction: row;
             gap: 4px;
+            overflow: hidden;
         }
 
         .big-gap {
@@ -77,6 +80,12 @@ export const VirPullRequest = defineElement<{
             display: flex;
             gap: 8px;
             align-items: center;
+        }
+
+        .branch-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .subtitle {
@@ -122,7 +131,11 @@ export const VirPullRequest = defineElement<{
             color: black;
         }
 
-        .nested {
+        .no-shrink {
+            flex-shrink: 0;
+        }
+
+        .nested-arrow {
             flex-shrink: 0;
             color: #ccc;
             height: 40px;
@@ -141,30 +154,33 @@ export const VirPullRequest = defineElement<{
         const assignees = Object.values(inputs.pullRequest.users.assignees).filter(isTruthy);
 
         const checksIconKey: keyof typeof checkIcons =
-            inputs.pullRequest.status.checksStatus instanceof Error
+            inputs.pullRequest.status.checksStatus instanceof Error ||
+            inputs.pullRequest.status.hasMergeConflicts
                 ? 'error'
                 : inputs.pullRequest.status.checksStatus.failCount
                   ? 'fail'
                   : inputs.pullRequest.status.checksStatus.inProgressCount
                     ? 'inProgress'
                     : 'success';
-        const checksTitle =
-            inputs.pullRequest.status.checksStatus instanceof Error
+
+        const checksTitle = inputs.pullRequest.status.hasMergeConflicts
+            ? 'Has Merge Conflicts'
+            : inputs.pullRequest.status.checksStatus instanceof Error
+              ? [
+                    'Error',
+                    extractErrorMessage(inputs.pullRequest.status.checksStatus),
+                ].join(': ')
+              : inputs.pullRequest.status.checksStatus.failCount
                 ? [
-                      'Error',
-                      extractErrorMessage(inputs.pullRequest.status.checksStatus),
-                  ].join(': ')
-                : inputs.pullRequest.status.checksStatus.failCount
+                      inputs.pullRequest.status.checksStatus.failCount,
+                      'checks failed.',
+                  ].join(' ')
+                : inputs.pullRequest.status.checksStatus.inProgressCount
                   ? [
-                        inputs.pullRequest.status.checksStatus.failCount,
-                        'checks failed.',
+                        inputs.pullRequest.status.checksStatus.inProgressCount,
+                        'check in progress.',
                     ].join(' ')
-                  : inputs.pullRequest.status.checksStatus.inProgressCount
-                    ? [
-                          inputs.pullRequest.status.checksStatus.inProgressCount,
-                          'check in progress.',
-                      ].join(' ')
-                    : 'All checks passed.';
+                  : 'All checks passed.';
 
         const baseBranchName: string | undefined = isError(
             inputs.pullRequest.branches.headBranch.branchName,
@@ -198,7 +214,7 @@ export const VirPullRequest = defineElement<{
             ${renderIf(
                 inputs.nested,
                 html`
-                    <div class="nested">↱</div>
+                    <div class="nested-arrow">↱</div>
                 `,
             )}
             <div
@@ -211,7 +227,7 @@ export const VirPullRequest = defineElement<{
                 <div class="columns title">
                     <div class="rows grow">
                         <div class="columns center">
-                            <span class="faint">
+                            <span class="faint no-shrink">
                                 <a href=${inputs.pullRequest.branches.headBranch.repo.htmlUrl}>
                                     ${inputs.pullRequest.branches.headBranch.repo.repoName}
                                 </a>
@@ -228,6 +244,26 @@ export const VirPullRequest = defineElement<{
                                     overlap: true,
                                 })}></${VirUsers}>
                             </div>
+                            ${renderIf(
+                                !!(baseBranchName || headBranchName),
+                                html`
+                                    <div class="center columns subtitle faint">
+                                        <span
+                                            class="branch-name select-all"
+                                            title=${headBranchName}
+                                        >
+                                            ${headBranchName}
+                                        </span>
+                                        ←
+                                        <span
+                                            class="branch-name select-all"
+                                            title=${baseBranchName}
+                                        >
+                                            ${baseBranchName}
+                                        </span>
+                                    </div>
+                                `,
+                            )}
                         </div>
                         <a href=${inputs.pullRequest.id.htmlUrl}>
                             <b>#${inputs.pullRequest.id.prNumber}:</b>
@@ -240,16 +276,6 @@ export const VirPullRequest = defineElement<{
                         holdStatusSpace: true,
                     })}></${VirUsers}>
                 </div>
-                ${renderIf(
-                    !!(baseBranchName || headBranchName),
-                    html`
-                        <div class="subtitle faint">
-                            <span class="select-all">${headBranchName}</span>
-                            ←
-                            <span class="select-all">${baseBranchName}</span>
-                        </div>
-                    `,
-                )}
                 <div class="subtitle columns big-gap faint">
                     <div>
                         <span

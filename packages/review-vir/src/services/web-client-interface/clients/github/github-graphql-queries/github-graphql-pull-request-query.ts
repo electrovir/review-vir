@@ -31,6 +31,12 @@ export enum GithubGraphqlReviewState {
     Dismissed = 'DISMISSED',
 }
 
+export enum GithubMergeableState {
+    Mergeable = 'MERGEABLE',
+    Conflicting = 'CONFLICTING',
+    Unknown = 'UNKNOWN',
+}
+
 export const failedCheckRunConclusions = [
     GithubGraphqlCheckRunConclusion.ActionRequired,
     GithubGraphqlCheckRunConclusion.Cancelled,
@@ -93,6 +99,7 @@ export const githubPullRequestSearchResponseShape = defineShape(
                 },
             },
         ),
+        mergeable: enumShape(GithubMergeableState),
         headRef: or(
             /** `null` means lack of permissions to read "Contents". */
             null,
@@ -288,6 +295,7 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                         url
                     }
                     url
+                    mergeable
                     headRepository {
                         name
                         owner {
