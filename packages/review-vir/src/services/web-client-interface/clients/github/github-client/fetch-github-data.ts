@@ -114,7 +114,5 @@ export async function fetchGithubData(
         throw new Error('User was never parsed from the GitHub GraphQL response.');
     }
 
-    console.log(pullRequests.filter((entry) => (entry as PullRequest).id.prNumber === '619')[0]);
-
     return {pullRequests, user};
 }

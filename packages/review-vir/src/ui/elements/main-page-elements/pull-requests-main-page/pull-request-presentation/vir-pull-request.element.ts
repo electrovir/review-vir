@@ -1,6 +1,5 @@
-import {extractErrorMessage, isTruthy} from '@augment-vir/common';
+import {extractErrorMessage, isTruthy, mapObjectValues} from '@augment-vir/common';
 import {classMap, css, defineElement, html, isError, renderIf, unsafeCSS} from 'element-vir';
-import {Writable} from 'type-fest';
 import {
     StatusFailure24Icon,
     StatusInProgress24Icon,
@@ -8,11 +7,7 @@ import {
     ViraIcon,
     ViraIconSvg,
 } from 'vira';
-import {
-    PullRequest,
-    PullRequestMergeStatus,
-    PullRequestReviewStatus,
-} from '../../../../../data/git/pull-request';
+import {PullRequest, PullRequestMergeStatus} from '../../../../../data/git/pull-request';
 import {User} from '../../../../../data/git/user';
 import {calculateTextColor} from '../../../../../util/color';
 import {VirUsers} from '../../../common-elements/vir-users.element';
@@ -314,35 +309,18 @@ export const VirPullRequest = defineElement<{
     },
 });
 
-function calculateReviewers(reviewers: Readonly<PullRequest['users']['reviewers']>): {
-    users: Readonly<User>[];
-    statuses: NonNullable<(typeof VirUsers.inputsType)['statuses']>;
-} {
-    const statuses: Writable<NonNullable<(typeof VirUsers.inputsType)['statuses']>> = {};
-    const users: Readonly<User>[] = [];
-
-    Object.values(reviewers.pending).forEach((pendingReviewer) => {
-        if (!pendingReviewer) {
-            return;
-        }
-
-        statuses[pendingReviewer.username] = undefined;
-        users.push(pendingReviewer);
-    });
-
-    Object.values(reviewers.submitted).forEach((submittedReviewer) => {
-        if (!submittedReviewer) {
-            return;
-        }
-        const reviewStatus = submittedReviewer.reviewStatus === PullRequestReviewStatus.Accepted;
-        const reviewString = reviewStatus ? 'approved' : 'rejected';
-
-        statuses[submittedReviewer.user.username] = {
-            status: reviewStatus,
-            description: `${submittedReviewer.user.username} has ${reviewString} this pull request.`,
-        };
-        users.push(submittedReviewer.user);
-    });
+function calculateReviewers(
+    reviewers: Readonly<PullRequest['users']['reviewers']>,
+): Pick<(typeof VirUsers)['inputsType'], 'users' | 'statuses'> {
+    const statuses: (typeof VirUsers)['inputsType']['statuses'] = mapObjectValues(
+        reviewers,
+        (key, value) => {
+            return value?.reviewStatus;
+        },
+    );
+    const users: Readonly<User>[] = Object.values(reviewers)
+        .map((reviewer) => reviewer?.user)
+        .filter(isTruthy);
 
     return {statuses, users};
 }

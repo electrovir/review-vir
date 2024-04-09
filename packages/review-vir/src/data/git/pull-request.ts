@@ -21,6 +21,7 @@ export enum PullRequestMergeStatus {
 export enum PullRequestReviewStatus {
     Accepted = 'accepted',
     Rejected = 'rejected',
+    Pending = 'pending',
 }
 
 const pullRequestChecksShape = defineShape(
@@ -34,14 +35,14 @@ const pullRequestChecksShape = defineShape(
 );
 export type PullRequestChecks = typeof pullRequestChecksShape.runTimeType;
 
-export const submittedPullRequestReviewShape = defineShape(
+export const pullRequestReviewShape = defineShape(
     {
         user: userShape,
         reviewStatus: enumShape(PullRequestReviewStatus),
     },
     true,
 );
-export type SubmittedPullRequestReview = typeof submittedPullRequestReviewShape.runTimeType;
+export type PullRequestReview = typeof pullRequestReviewShape.runTimeType;
 
 export const pullRequestShape = defineShape({
     id: {
@@ -90,18 +91,11 @@ export const pullRequestShape = defineShape({
         changedFiles: 0,
     },
     users: {
-        reviewers: {
-            submitted: indexedKeys({
-                keys: '',
-                values: submittedPullRequestReviewShape,
-                required: false,
-            }),
-            pending: indexedKeys({
-                keys: '',
-                values: userShape,
-                required: false,
-            }),
-        },
+        reviewers: indexedKeys({
+            keys: '',
+            values: pullRequestReviewShape,
+            required: false,
+        }),
         assignees: indexedKeys({
             keys: '',
             values: userShape,
@@ -109,6 +103,7 @@ export const pullRequestShape = defineShape({
         }),
     },
     cost: unknownShape(),
+    raw: unknownShape(),
 });
 
 export type PullRequest = typeof pullRequestShape.runTimeType;

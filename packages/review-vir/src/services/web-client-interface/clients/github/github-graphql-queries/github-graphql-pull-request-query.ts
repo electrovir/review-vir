@@ -80,6 +80,15 @@ const githubRunCheckStateShape = defineShape(
 );
 export type GithubRunCheckState = typeof githubRunCheckStateShape.runTimeType;
 
+const githubReviewShape = defineShape(
+    {
+        state: enumShape(GithubGraphqlReviewState),
+        author: githubUserSearchResponseShape,
+        submittedAt: '',
+    },
+    true,
+);
+
 export const githubPullRequestSearchResponseShape = defineShape(
     {
         additions: 0,
@@ -184,12 +193,7 @@ export const githubPullRequestSearchResponseShape = defineShape(
          * here.
          */
         latestReviews: {
-            nodes: [
-                {
-                    state: enumShape(GithubGraphqlReviewState),
-                    author: githubUserSearchResponseShape,
-                },
-            ],
+            nodes: [githubReviewShape],
         },
         /**
          * Indicates reviews that have been left. Note that this includes previous reviews from
@@ -197,12 +201,7 @@ export const githubPullRequestSearchResponseShape = defineShape(
          * `reviewRequests` field before using them.
          */
         latestOpinionatedReviews: {
-            nodes: [
-                {
-                    state: enumShape(GithubGraphqlReviewState),
-                    author: githubUserSearchResponseShape,
-                },
-            ],
+            nodes: [githubReviewShape],
         },
         /** Indicates requests for review that have not been met. */
         reviewRequests: {
@@ -382,6 +381,7 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                                 avatarUrl
                                 url
                             }
+                            submittedAt
                             state
                         }
                     }
@@ -392,6 +392,7 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                                 avatarUrl
                                 url
                             }
+                            submittedAt
                             state
                         }
                     }

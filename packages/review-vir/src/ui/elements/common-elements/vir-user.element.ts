@@ -1,5 +1,6 @@
-import {classMap, css, defineElement, html, nothing} from 'element-vir';
+import {classMap, css, defineElement, html, ifDefined, nothing} from 'element-vir';
 import {StatusFailure24Icon, StatusSuccess24Icon, ViraIcon, ViraIconSvg, ViraImage} from 'vira';
+import {PullRequestReviewStatus} from '../../../data/git/pull-request';
 import {User} from '../../../data/git/user';
 
 export const VirUser = defineElement<{
@@ -9,7 +10,7 @@ export const VirUser = defineElement<{
         username: boolean;
         statusSpace?: boolean | undefined;
     };
-    status?: {status: boolean; description: string} | undefined;
+    status?: PullRequestReviewStatus | undefined;
 }>()({
     tagName: 'vir-user',
     styles: css`
@@ -48,13 +49,20 @@ export const VirUser = defineElement<{
     `,
     renderCallback({inputs}) {
         const statusIcon: ViraIconSvg | undefined =
-            inputs.status == undefined
+            inputs.status == undefined || inputs.status === PullRequestReviewStatus.Pending
                 ? undefined
-                : inputs.status.status
+                : inputs.status === PullRequestReviewStatus.Accepted
                   ? StatusSuccess24Icon
                   : StatusFailure24Icon;
 
         const shouldShowStatusPlaceholder = !!inputs.show.statusSpace && !statusIcon;
+
+        const description: string | undefined =
+            inputs.status == undefined || inputs.status === PullRequestReviewStatus.Pending
+                ? undefined
+                : inputs.status === PullRequestReviewStatus.Accepted
+                  ? `${inputs.user.username} has accepted this pull request.`
+                  : `${inputs.user.username} has requested changes on this pull request.`;
 
         const statusTemplate =
             statusIcon || shouldShowStatusPlaceholder
@@ -64,10 +72,10 @@ export const VirUser = defineElement<{
                           fitContainer: true,
                       })}
                           class="status-icon ${classMap({
-                              success: !!inputs.status?.status,
+                              success: inputs.status === PullRequestReviewStatus.Accepted,
                               placeholder: shouldShowStatusPlaceholder,
                           })}"
-                          title=${inputs.status?.description}
+                          title=${ifDefined(description)}
                       ></${ViraIcon}>
                   `
                 : nothing;

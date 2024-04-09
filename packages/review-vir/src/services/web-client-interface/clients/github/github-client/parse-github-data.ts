@@ -1,16 +1,11 @@
-import {
-    arrayToObject,
-    filterMap,
-    filterObject,
-    isTruthy,
-    typedArrayIncludes,
-} from '@augment-vir/common';
+import {arrayToObject, typedArrayIncludes, typedObjectFromEntries} from '@augment-vir/common';
 import {createFullDateInUserTimezone} from 'date-vir';
 import {SupportedServiceName} from '../../../../../data/auth-tokens';
 import {
     PullRequest,
     PullRequestChecks,
     PullRequestMergeStatus,
+    PullRequestReview,
     PullRequestReviewStatus,
 } from '../../../../../data/git/pull-request';
 import {User} from '../../../../../data/git/user';
@@ -123,6 +118,7 @@ export function parseGithubSearchPullRequest(
         },
         users: pullRequestUsers,
         cost: rateLimit,
+        raw,
     };
     return pullRequest;
 }
@@ -149,8 +145,8 @@ function determineIfNeedsReviewFromCurrentUser(
 ): boolean {
     return (
         mergeStatus === PullRequestMergeStatus.Open &&
-        (user.username in pullRequestUsers.reviewers.pending ||
-            !(user.username in pullRequestUsers.reviewers.submitted)) &&
+        pullRequestUsers.reviewers[user.username]?.reviewStatus ===
+            PullRequestReviewStatus.Pending &&
         !(user.username in pullRequestUsers.assignees)
     );
 }
@@ -167,44 +163,52 @@ function parseReviews(
         raw.reviewRequests.nodes.map((node) => parseGithubUser(node.requestedReviewer)),
     );
 
-    const submittedReviewers = filterMap(
-        [
-            ...raw.latestReviews.nodes,
-            ...raw.latestOpinionatedReviews.nodes,
-        ],
-        (entry) => {
-            const parsedUser = parseGithubUser(entry.author);
-
-            const reviewStatus: PullRequestReviewStatus | undefined =
-                entry.state === GithubGraphqlReviewState.Approved
-                    ? PullRequestReviewStatus.Accepted
-                    : entry.state === GithubGraphqlReviewState.ChangesRequested
-                      ? PullRequestReviewStatus.Rejected
-                      : undefined;
-
-            if (parsedUser.username in pendingReviewers) {
-                return undefined;
-            } else if (reviewStatus) {
-                return {
-                    user: parsedUser,
-                    reviewStatus,
-                };
-            } else {
-                pendingReviewers[parsedUser.username] = parsedUser;
-                return undefined;
-            }
-        },
-        isTruthy,
+    const latestReviews = arrayToObject(raw.latestReviews.nodes, (review) => review.author.login);
+    const latestOpinionatedReviews = arrayToObject(
+        raw.latestOpinionatedReviews.nodes,
+        (review) => review.author.login,
     );
 
-    const submitted = arrayToObject(submittedReviewers, (entry) => entry.user.username);
+    const allUsernames = Array.from(
+        new Set([
+            ...Object.keys(pendingReviewers),
+            ...Object.keys(latestReviews),
+            ...Object.keys(latestOpinionatedReviews),
+        ]),
+    );
 
-    return {
-        pending: filterObject(pendingReviewers, (key) => {
-            return !(key in submitted);
+    return typedObjectFromEntries(
+        allUsernames.map((username): [string, PullRequestReview] => {
+            const user =
+                pendingReviewers[username] ||
+                latestReviews[username]?.author ||
+                latestOpinionatedReviews[username]?.author;
+
+            if (!user) {
+                throw new Error(`Failed to find user '${username}'`);
+            }
+
+            const reviewStatus: PullRequestReviewStatus =
+                latestOpinionatedReviews[username]?.state === GithubGraphqlReviewState.Approved
+                    ? PullRequestReviewStatus.Accepted
+                    : latestOpinionatedReviews[username]?.state ===
+                        GithubGraphqlReviewState.ChangesRequested
+                      ? PullRequestReviewStatus.Rejected
+                      : PullRequestReviewStatus.Pending;
+
+            return [
+                username,
+                {
+                    user: {
+                        avatarUrl: user.avatarUrl || '',
+                        profileUrl: user.avatarUrl || '',
+                        username,
+                    },
+                    reviewStatus,
+                },
+            ];
         }),
-        submitted,
-    };
+    );
 }
 
 function parseStates(

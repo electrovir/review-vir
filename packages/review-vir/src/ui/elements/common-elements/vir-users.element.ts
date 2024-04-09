@@ -1,4 +1,5 @@
 import {css, defineElement, html} from 'element-vir';
+import {PullRequestReview} from '../../../data/git/pull-request';
 import {User} from '../../../data/git/user';
 import {VirUser} from './vir-user.element';
 
@@ -8,12 +9,7 @@ export const VirUsers = defineElement<{
     statuses?:
         | undefined
         | Readonly<{
-              [username in string]:
-                  | {
-                        status: boolean;
-                        description: string;
-                    }
-                  | undefined;
+              [username in string]: PullRequestReview['reviewStatus'] | undefined;
           }>;
     overlap: boolean;
 }>()({
