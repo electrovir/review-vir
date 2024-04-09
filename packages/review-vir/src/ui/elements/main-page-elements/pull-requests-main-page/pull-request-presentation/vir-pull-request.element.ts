@@ -174,7 +174,9 @@ export const VirPullRequest = defineElement<{
                     <div class="rows grow">
                         <div class="columns center">
                             <span class="faint">
-                                ${inputs.pullRequest.branches.headBranch.repo.repoName}
+                                <a href=${inputs.pullRequest.branches.headBranch.repo.htmlUrl}>
+                                    ${inputs.pullRequest.branches.headBranch.repo.repoName}
+                                </a>
                             </span>
                             <div class="checks">
                                 <${ViraIcon.assign({
