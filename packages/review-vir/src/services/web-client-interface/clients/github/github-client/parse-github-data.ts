@@ -182,7 +182,9 @@ function parseReviews(
                       ? PullRequestReviewStatus.Rejected
                       : undefined;
 
-            if (reviewStatus) {
+            if (parsedUser.username in pendingReviewers) {
+                return undefined;
+            } else if (reviewStatus) {
                 return {
                     user: parsedUser,
                     reviewStatus,
