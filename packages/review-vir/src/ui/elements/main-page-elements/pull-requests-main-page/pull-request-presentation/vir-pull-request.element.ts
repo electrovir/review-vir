@@ -258,6 +258,11 @@ export const VirPullRequest = defineElement<{
                             ${resolvedCommentsString}
                         </span>
                     </div>
+                    <div>
+                        <span title=${`${inputs.pullRequest.status.commitCount} commits`}>
+                            ${inputs.pullRequest.status.commitCount}
+                        </span>
+                    </div>
                 </div>
             </div>
         `;
