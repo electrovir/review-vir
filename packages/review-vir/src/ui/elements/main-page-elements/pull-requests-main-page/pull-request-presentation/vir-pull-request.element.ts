@@ -95,6 +95,16 @@ export const VirPullRequest = defineElement<{
             color: green;
         }
 
+        .deletions {
+            color: #bf4040;
+        }
+        .changed-files {
+            color: #5690c7;
+        }
+        .additions {
+            color: #206020;
+        }
+
         .checks {
             display: flex;
             gap: 4px;
@@ -212,6 +222,26 @@ export const VirPullRequest = defineElement<{
                         </div>
                     `,
                 )}
+                <div class="subtitle faint">
+                    <span
+                        class="additions"
+                        title=${`${inputs.pullRequest.changes.additions} added lines`}
+                    >
+                        +${inputs.pullRequest.changes.additions}
+                    </span>
+                    <span
+                        class="deletions"
+                        title=${`${inputs.pullRequest.changes.deletions} deleted lines`}
+                    >
+                        -${inputs.pullRequest.changes.deletions}
+                    </span>
+                    <span
+                        class="changed-files"
+                        title=${`${inputs.pullRequest.changes.changedFiles} changed files`}
+                    >
+                        &nbsp;${inputs.pullRequest.changes.changedFiles}
+                    </span>
+                </div>
             </div>
         `;
     },

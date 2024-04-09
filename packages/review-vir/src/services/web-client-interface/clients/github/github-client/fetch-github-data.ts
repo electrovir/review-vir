@@ -107,5 +107,7 @@ export async function fetchGithubData(
         throw new Error('User was never parsed from the GitHub GraphQL response.');
     }
 
+    console.log(pullRequests);
+
     return {pullRequests, user};
 }
