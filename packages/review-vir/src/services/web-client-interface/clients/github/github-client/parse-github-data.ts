@@ -1,4 +1,10 @@
-import {arrayToObject, filterMap, isTruthy, typedArrayIncludes} from '@augment-vir/common';
+import {
+    arrayToObject,
+    filterMap,
+    filterObject,
+    isTruthy,
+    typedArrayIncludes,
+} from '@augment-vir/common';
 import {createFullDateInUserTimezone} from 'date-vir';
 import {SupportedServiceName} from '../../../../../data/auth-tokens';
 import {
@@ -122,19 +128,24 @@ function determineIfNeedsReviewFromCurrentUser(
 }
 
 function parseReviews(
-    raw: Readonly<Pick<GithubSearchPullRequest, 'latestOpinionatedReviews' | 'reviewRequests'>>,
+    raw: Readonly<
+        Pick<
+            GithubSearchPullRequest,
+            'latestOpinionatedReviews' | 'reviewRequests' | 'latestReviews'
+        >
+    >,
 ): PullRequest['users']['reviewers'] {
     const pendingReviewers = groupUsersByUserName(
         raw.reviewRequests.nodes.map((node) => parseGithubUser(node.requestedReviewer)),
     );
 
     const submittedReviewers = filterMap(
-        raw.latestOpinionatedReviews.nodes,
+        [
+            ...raw.latestReviews.nodes,
+            ...raw.latestOpinionatedReviews.nodes,
+        ],
         (entry) => {
             const parsedUser = parseGithubUser(entry.author);
-            if (parsedUser.username in pendingReviewers) {
-                return undefined;
-            }
 
             const reviewStatus: PullRequestReviewStatus | undefined =
                 entry.state === GithubGraphqlReviewState.Approved
@@ -142,6 +153,7 @@ function parseReviews(
                     : entry.state === GithubGraphqlReviewState.ChangesRequested
                       ? PullRequestReviewStatus.Rejected
                       : undefined;
+
             if (reviewStatus) {
                 return {
                     user: parsedUser,
@@ -155,9 +167,13 @@ function parseReviews(
         isTruthy,
     );
 
+    const submitted = arrayToObject(submittedReviewers, (entry) => entry.user.username);
+
     return {
-        pending: pendingReviewers,
-        submitted: arrayToObject(submittedReviewers, (entry) => entry.user.username),
+        pending: filterObject(pendingReviewers, (key) => {
+            return !(key in submitted);
+        }),
+        submitted,
     };
 }
 

@@ -154,6 +154,18 @@ export const githubPullRequestSearchResponseShape = defineShape(
         mergedBy: or(null, githubUserSearchResponseShape),
         number: 0,
         /**
+         * Comment reviews don't show up in `latestOpinionatedReviews` so much be extracted from
+         * here.
+         */
+        latestReviews: {
+            nodes: [
+                {
+                    state: enumShape(GithubGraphqlReviewState),
+                    author: githubUserSearchResponseShape,
+                },
+            ],
+        },
+        /**
          * Indicates reviews that have been left. Note that this includes previous reviews from
          * users that currently need to re-review. Compare each of these entries with the
          * `reviewRequests` field before using them.
@@ -324,14 +336,24 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                             url
                         }
                     }
-                    latestOpinionatedReviews(first: 10) {
+                    latestReviews(first: 10) {
                         nodes {
-                            state
                             author {
                                 login
                                 avatarUrl
                                 url
                             }
+                            state
+                        }
+                    }
+                    latestOpinionatedReviews(first: 10) {
+                        nodes {
+                            author {
+                                login
+                                avatarUrl
+                                url
+                            }
+                            state
                         }
                     }
                     reviewRequests(first: 10) {
