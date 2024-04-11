@@ -1,5 +1,6 @@
 import {arrayToObject, typedArrayIncludes, typedObjectFromEntries} from '@augment-vir/common';
 import {createFullDateInUserTimezone} from 'date-vir';
+import {hasProperty} from 'run-time-assertions';
 import {SupportedServiceName} from '../../../../../data/auth-tokens';
 import {
     PullRequest,
@@ -188,13 +189,14 @@ function parseReviews(
                 throw new Error(`Failed to find user '${username}'`);
             }
 
-            const reviewStatus: PullRequestReviewStatus =
-                latestOpinionatedReviews[username]?.state === GithubGraphqlReviewState.Approved
-                    ? PullRequestReviewStatus.Accepted
-                    : latestOpinionatedReviews[username]?.state ===
-                        GithubGraphqlReviewState.ChangesRequested
-                      ? PullRequestReviewStatus.Rejected
-                      : PullRequestReviewStatus.Pending;
+            const reviewStatus: PullRequestReviewStatus = hasProperty(pendingReviewers, username)
+                ? PullRequestReviewStatus.Pending
+                : latestOpinionatedReviews[username]?.state === GithubGraphqlReviewState.Approved
+                  ? PullRequestReviewStatus.Accepted
+                  : latestOpinionatedReviews[username]?.state ===
+                      GithubGraphqlReviewState.ChangesRequested
+                    ? PullRequestReviewStatus.Rejected
+                    : PullRequestReviewStatus.Pending;
 
             return [
                 username,
