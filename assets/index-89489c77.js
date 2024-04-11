@@ -714,7 +714,7 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
                 <a href=${a} rel="noopener noreferrer" ${q("click",n)}>
                     <slot></slot>
                 </a>
-            `}}});var ct=(t=>(t.Github="github",t))(ct||{});const i1=ue({authTokenName:"",authTokenSecret:""},!0),Qc=ue(cn({keys:un(ct),values:[i1],required:!1}),!0);class Xs extends Error{constructor(r,n,s){super(`${r} at index '${s}' in service '${n}'`);Cr(this,"name","AuthTokenValidationError");this.serviceName=n,this.authTokenIndex=s}}function a1(t){Ou(t,Qc),K(t).forEach(e=>{const r=t[e];r==null||r.forEach((n,s)=>{if(n.authTokenName){if(!n.authTokenSecret)throw new Xs("Empty auth token secret",e,s)}else throw new Xs("Empty auth token name",e,s)})})}const Ur=typeof{}>"u"?void 0:{},o1="6rbd4mt4p4ve83gfijfcpxaoehmrux53",il={devAuthTokens:Cu(Ur==null?void 0:Ur.authTokens,Qc)?Ur.authTokens:{},encryptionKey:o1};var nt=(t=>(t.Auth="auth",t.PullRequests="pull-requests",t))(nt||{});const mr={hash:void 0,paths:["pull-requests"],search:void 0};function l1(){return s1({routeBase:"review-vir",routeSanitizer(t){return{paths:u1(t.paths),hash:void 0,search:void 0}}})}function u1(t){const e=t[0];return kd(e,nt)?[e]:mr.paths}const c1="modulepreload",d1=function(t){return"/review-vir/"+t},al={},ol=function(e,r,n){if(!r||r.length===0)return e();const s=document.getElementsByTagName("link");return Promise.all(r.map(i=>{if(i=d1(i),i in al)return;al[i]=!0;const a=i.endsWith(".css"),o=a?'[rel="stylesheet"]':"";if(!!n)for(let c=s.length-1;c>=0;c--){const d=s[c];if(d.href===i&&(!a||d.rel==="stylesheet"))return}else if(document.querySelector(`link[href="${i}"]${o}`))return;const u=document.createElement("link");if(u.rel=a?"stylesheet":c1,a||(u.as="script",u.crossOrigin=""),u.href=i,document.head.appendChild(u),a)return new Promise((c,d)=>{u.addEventListener("load",c),u.addEventListener("error",()=>d(new Error(`Unable to preload CSS for ${i}`)))})})).then(()=>e()).catch(i=>{const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=i,window.dispatchEvent(a),!a.defaultPrevented)throw i})},f1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function h1(t,e){return t?f1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function ll(t){let e;try{e=Reflect.ownKeys(t)}catch{}return e??[...Object.keys(t),...Object.getOwnPropertySymbols(t)]}var ul;(function(t){t.Upper="upper",t.Lower="lower"})(ul||(ul={}));var cl;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(cl||(cl={}));function m1(t){return!!t&&typeof t=="object"}function p1(t,e){let r=!1;const n=ll(t).reduce((s,i)=>{const a=e(i,t[i],t);return a instanceof Promise&&(r=!0),{...s,[i]:a}},{});return r?new Promise(async(s,i)=>{try{await Promise.all(ll(n).map(async a=>{const o=await n[a];n[a]=o})),s(n)}catch(a){i(a)}}):n}function g1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}g1();function w1(t){return m1(t)&&h1(t,"liveClient")&&R(t.liveClient,"function")}function nw(t){return{liveClient(){return typeof t=="function"?t():t}}}const y1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function b1(t,e){return t?y1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function v1(t,e){return t.includes(e)}var dl;(function(t){t.Upper="upper",t.Lower="lower"})(dl||(dl={}));var fl;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(fl||(fl={}));function E1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}E1();const S1=Symbol("set-mock-return-value"),Ms=Symbol("get-last-called-args"),T1=["then","catch","finally"];function ed(){const t={},e=()=>{};function r(n){return n in t||(t[n]=ed()),t[n]}return new Proxy(e,{get:(n,s)=>s===Ms?t[Ms]:v1(T1,s)&&!b1(t,s)?void 0:r(s),apply:(n,s,i)=>(t[Ms]=i,r(S1)),set:(n,s,i)=>(t[s]=i,!0),has(n,s){return s in t}})}async function M1(t,e){const r=await t(),n=Object.values(r).find(w1);if(!n)throw new Error(`Failed to find any client definitions exported for client '${e}'`);return await n.liveClient()}function $1({clientImports:t,isTestEnv:e,mockClients:r}){const n={};let s;return Object.entries(t).forEach(([i,a])=>{Object.defineProperty(n,i,{async get(){if(e){if(r&&(s||(s=typeof r=="function"?await r():r),s&&i in s)){const o=s[i];if(!o)throw new Error(`Mock client for '${i}' is not defined.`);return await o}return ed()}else return await M1(a,i)}})}),n}async function k1(t){return p1(t,async(r,n)=>{try{return await n}catch(s){console.error(`Failed to await client '${String(r)}':`,s);return}})}const A1=$1({clientImports:{github:()=>ol(()=>import("./github.client-d5215ec5.js"),["assets/github.client-d5215ec5.js","assets/index-f4dd668f.js"]),authStore:()=>ol(()=>import("./auth-store.client-4780e232.js"),["assets/auth-store.client-4780e232.js","assets/index-f4dd668f.js"])},isTestEnv:!1});async function x1(){return k1(A1)}const Qs=Ti()("change-route"),hl=be()({tagName:"vir-app-tabs",styles:P`
+            `}}});var ct=(t=>(t.Github="github",t))(ct||{});const i1=ue({authTokenName:"",authTokenSecret:""},!0),Qc=ue(cn({keys:un(ct),values:[i1],required:!1}),!0);class Xs extends Error{constructor(r,n,s){super(`${r} at index '${s}' in service '${n}'`);Cr(this,"name","AuthTokenValidationError");this.serviceName=n,this.authTokenIndex=s}}function a1(t){Ou(t,Qc),K(t).forEach(e=>{const r=t[e];r==null||r.forEach((n,s)=>{if(n.authTokenName){if(!n.authTokenSecret)throw new Xs("Empty auth token secret",e,s)}else throw new Xs("Empty auth token name",e,s)})})}const Ur=typeof{}>"u"?void 0:{},o1="6rbd4mt4p4ve83gfijfcpxaoehmrux53",il={devAuthTokens:Cu(Ur==null?void 0:Ur.authTokens,Qc)?Ur.authTokens:{},encryptionKey:o1};var nt=(t=>(t.Auth="auth",t.PullRequests="pull-requests",t))(nt||{});const mr={hash:void 0,paths:["pull-requests"],search:void 0};function l1(){return s1({routeBase:"review-vir",routeSanitizer(t){return{paths:u1(t.paths),hash:void 0,search:void 0}}})}function u1(t){const e=t[0];return kd(e,nt)?[e]:mr.paths}const c1="modulepreload",d1=function(t){return"/review-vir/"+t},al={},ol=function(e,r,n){if(!r||r.length===0)return e();const s=document.getElementsByTagName("link");return Promise.all(r.map(i=>{if(i=d1(i),i in al)return;al[i]=!0;const a=i.endsWith(".css"),o=a?'[rel="stylesheet"]':"";if(!!n)for(let c=s.length-1;c>=0;c--){const d=s[c];if(d.href===i&&(!a||d.rel==="stylesheet"))return}else if(document.querySelector(`link[href="${i}"]${o}`))return;const u=document.createElement("link");if(u.rel=a?"stylesheet":c1,a||(u.as="script",u.crossOrigin=""),u.href=i,document.head.appendChild(u),a)return new Promise((c,d)=>{u.addEventListener("load",c),u.addEventListener("error",()=>d(new Error(`Unable to preload CSS for ${i}`)))})})).then(()=>e()).catch(i=>{const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=i,window.dispatchEvent(a),!a.defaultPrevented)throw i})},f1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function h1(t,e){return t?f1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function ll(t){let e;try{e=Reflect.ownKeys(t)}catch{}return e??[...Object.keys(t),...Object.getOwnPropertySymbols(t)]}var ul;(function(t){t.Upper="upper",t.Lower="lower"})(ul||(ul={}));var cl;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(cl||(cl={}));function m1(t){return!!t&&typeof t=="object"}function p1(t,e){let r=!1;const n=ll(t).reduce((s,i)=>{const a=e(i,t[i],t);return a instanceof Promise&&(r=!0),{...s,[i]:a}},{});return r?new Promise(async(s,i)=>{try{await Promise.all(ll(n).map(async a=>{const o=await n[a];n[a]=o})),s(n)}catch(a){i(a)}}):n}function g1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}g1();function w1(t){return m1(t)&&h1(t,"liveClient")&&R(t.liveClient,"function")}function nw(t){return{liveClient(){return typeof t=="function"?t():t}}}const y1=[(t,e)=>e in t,(t,e)=>e in t.constructor.prototype];function b1(t,e){return t?y1.some(r=>{try{return r(t,e)}catch{return!1}}):!1}function v1(t,e){return t.includes(e)}var dl;(function(t){t.Upper="upper",t.Lower="lower"})(dl||(dl={}));var fl;(function(t){t.FirstThenWait="first-then-wait",t.AfterWait="after-wait"})(fl||(fl={}));function E1(){return globalThis.crypto?globalThis.crypto:require("crypto").webcrypto}E1();const S1=Symbol("set-mock-return-value"),Ms=Symbol("get-last-called-args"),T1=["then","catch","finally"];function ed(){const t={},e=()=>{};function r(n){return n in t||(t[n]=ed()),t[n]}return new Proxy(e,{get:(n,s)=>s===Ms?t[Ms]:v1(T1,s)&&!b1(t,s)?void 0:r(s),apply:(n,s,i)=>(t[Ms]=i,r(S1)),set:(n,s,i)=>(t[s]=i,!0),has(n,s){return s in t}})}async function M1(t,e){const r=await t(),n=Object.values(r).find(w1);if(!n)throw new Error(`Failed to find any client definitions exported for client '${e}'`);return await n.liveClient()}function $1({clientImports:t,isTestEnv:e,mockClients:r}){const n={};let s;return Object.entries(t).forEach(([i,a])=>{Object.defineProperty(n,i,{async get(){if(e){if(r&&(s||(s=typeof r=="function"?await r():r),s&&i in s)){const o=s[i];if(!o)throw new Error(`Mock client for '${i}' is not defined.`);return await o}return ed()}else return await M1(a,i)}})}),n}async function k1(t){return p1(t,async(r,n)=>{try{return await n}catch(s){console.error(`Failed to await client '${String(r)}':`,s);return}})}const A1=$1({clientImports:{github:()=>ol(()=>import("./github.client-873019e6.js"),["assets/github.client-873019e6.js","assets/index-f4dd668f.js"]),authStore:()=>ol(()=>import("./auth-store.client-2a85c600.js"),["assets/auth-store.client-2a85c600.js","assets/index-f4dd668f.js"])},isTestEnv:!1});async function x1(){return k1(A1)}const Qs=Ti()("change-route"),hl=be()({tagName:"vir-app-tabs",styles:P`
         :host {
             display: flex;
             border-bottom: 1px solid #ddd;
@@ -997,6 +997,7 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
 
         .pull-request {
             border-radius: 8px;
+            gap: 8px;
             border: 2px solid #ccc;
             padding: 8px;
         }
@@ -1042,15 +1043,18 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
             color: green;
         }
 
-        .deletions {
-            color: #bf4040;
-        }
-        .changed-files {
-            color: #5690c7;
-        }
-        .additions {
-            color: #206020;
-        }
+        /*
+            These colors were too noisy
+            .deletions {
+                color: #bf4040;
+            }
+            .changed-files {
+                color: #5690c7;
+            }
+            .additions {
+                color: #206020;
+            }
+        */
 
         .checks {
             display: flex;
@@ -1058,7 +1062,7 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
         }
 
         .label {
-            opacity: 0.5;
+            opacity: 0.4;
             padding: 1px 8px;
             border-radius: 16px;
             color: black;
@@ -1083,8 +1087,11 @@ var od=Object.defineProperty;var ld=(t,e,r)=>e in t?od(t,e,{enumerable:!0,config
             -webkit-user-select: all;
         }
     `,renderCallback({inputs:t}){const e=Object.values(t.pullRequest.users.assignees).filter(pr),r=t.pullRequest.status.checksStatus instanceof Error||t.pullRequest.status.hasMergeConflicts?"error":t.pullRequest.status.checksStatus.failCount?"fail":t.pullRequest.status.checksStatus.inProgressCount?"inProgress":"success",n=t.pullRequest.status.hasMergeConflicts?"Has Merge Conflicts":t.pullRequest.status.checksStatus instanceof Error?["Error",st(t.pullRequest.status.checksStatus)].join(": "):t.pullRequest.status.checksStatus.failCount?[t.pullRequest.status.checksStatus.failCount,"checks failed."].join(" "):t.pullRequest.status.checksStatus.inProgressCount?[t.pullRequest.status.checksStatus.inProgressCount,"check in progress."].join(" "):"All checks passed.",s=hn(t.pullRequest.branches.headBranch.branchName)?void 0:t.pullRequest.branches.headBranch.branchName,i=hn(t.pullRequest.branches.targetBranch.branchName)?void 0:t.pullRequest.branches.targetBranch.branchName,a=[t.pullRequest.status.comments.resolved,t.pullRequest.status.comments.total].join(" / "),o=t.pullRequest.status.labels.map(l=>{const u=P`
-                background-color: ${he(l.color)};
-                color: ${he(D1(l.color))};
+                /*
+                    these colors are too noisy
+                    background-color: ${he(l.color)};
+                    color: ${he(D1(l.color))};
+                */
             `;return y`
                 <span class="label" style=${u}>${l.name}</span>
             `});return y`
