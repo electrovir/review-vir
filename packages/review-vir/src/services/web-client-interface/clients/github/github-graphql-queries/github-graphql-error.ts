@@ -5,5 +5,5 @@ export const githubGraphqlErrorShape = defineShape({
     locations: [{line: 0, column: 0}],
     message: '',
     path: [or('', 0)],
-    type: '',
+    type: or('', undefined),
 });

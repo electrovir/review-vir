@@ -59,6 +59,7 @@ export const VirPullRequest = defineElement<{
 
         .pull-request {
             border-radius: 8px;
+            gap: 8px;
             border: 2px solid #ccc;
             padding: 8px;
         }
@@ -104,15 +105,18 @@ export const VirPullRequest = defineElement<{
             color: green;
         }
 
-        .deletions {
-            color: #bf4040;
-        }
-        .changed-files {
-            color: #5690c7;
-        }
-        .additions {
-            color: #206020;
-        }
+        /*
+            These colors were too noisy
+            .deletions {
+                color: #bf4040;
+            }
+            .changed-files {
+                color: #5690c7;
+            }
+            .additions {
+                color: #206020;
+            }
+        */
 
         .checks {
             display: flex;
@@ -120,7 +124,7 @@ export const VirPullRequest = defineElement<{
         }
 
         .label {
-            opacity: 0.5;
+            opacity: 0.4;
             padding: 1px 8px;
             border-radius: 16px;
             color: black;
@@ -197,8 +201,11 @@ export const VirPullRequest = defineElement<{
 
         const labelTemplates = inputs.pullRequest.status.labels.map((label) => {
             const style = css`
-                background-color: ${unsafeCSS(label.color)};
-                color: ${unsafeCSS(calculateTextColor(label.color))};
+                /*
+                    these colors are too noisy
+                    background-color: ${unsafeCSS(label.color)};
+                    color: ${unsafeCSS(calculateTextColor(label.color))};
+                */
             `;
             return html`
                 <span class="label" style=${style}>${label.name}</span>
