@@ -267,7 +267,7 @@ export const VirPullRequest = defineElement<{
                                 `,
                             )}
                         </div>
-                        <a href=${inputs.pullRequest.id.htmlUrl}>
+                        <a href=${inputs.pullRequest.id.htmlUrl} target="_blank">
                             <b>#${inputs.pullRequest.id.prNumber}:</b>
                             ${inputs.pullRequest.id.title}
                         </a>
