@@ -1,5 +1,4 @@
 import {css, defineElement, html, listen} from 'element-vir';
-import {routeOnLinkClick} from 'spa-router-vir';
 import {noNativeSpacing} from 'vira';
 import {
     ReviewVirFullRoute,
@@ -54,9 +53,9 @@ export const VirAppTabs = defineElement<{
             return html`
                 <li>
                     <a
-                        href=${inputs.router.createRoutesUrl(route)}
+                        href=${inputs.router.createRouteUrl(route)}
                         ${listen('click', (event) => {
-                            routeOnLinkClick(event, route, inputs.router);
+                            inputs.router.setRouteOnDirectNavigation(route, event);
                         })}
                     >
                         ${appTab.label}

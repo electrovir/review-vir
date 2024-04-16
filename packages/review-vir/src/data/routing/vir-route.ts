@@ -1,5 +1,5 @@
 import {isEnumValue} from '@augment-vir/common';
-import {FullRoute, createSpaRouter} from 'spa-router-vir';
+import {FullRoute, SpaRouter} from 'spa-router-vir';
 
 export enum ReviewVirMainPath {
     Auth = 'auth',
@@ -19,9 +19,9 @@ export const defaultReviewVirFullRoute: Readonly<ReviewVirFullRoute> = {
 } as const;
 
 export function createReviewVirRouter() {
-    return createSpaRouter<ValidReviewVirPaths, undefined, undefined>({
-        routeBase: 'review-vir',
-        routeSanitizer(rawRoute) {
+    return new SpaRouter<ValidReviewVirPaths, undefined, undefined>({
+        basePath: 'review-vir',
+        sanitizeRoute(rawRoute) {
             const sanitizedPaths = sanitizePaths(rawRoute.paths);
 
             return {
@@ -35,7 +35,7 @@ export function createReviewVirRouter() {
 
 export type ReviewVirRouter = ReturnType<typeof createReviewVirRouter>;
 
-function sanitizePaths(rawPaths: ReadonlyArray<string>): Readonly<ValidReviewVirPaths> {
+function sanitizePaths(rawPaths: ReadonlyArray<string>): ValidReviewVirPaths {
     const mainPath = rawPaths[0];
     if (!isEnumValue(mainPath, ReviewVirMainPath)) {
         return defaultReviewVirFullRoute.paths;

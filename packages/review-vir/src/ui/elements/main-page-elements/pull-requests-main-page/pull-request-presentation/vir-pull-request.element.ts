@@ -1,5 +1,5 @@
 import {extractErrorMessage, isTruthy, mapObjectValues} from '@augment-vir/common';
-import {classMap, css, defineElement, html, isError, renderIf, unsafeCSS} from 'element-vir';
+import {classMap, css, defineElement, html, isAsyncError, renderIf, unsafeCSS} from 'element-vir';
 import {
     StatusFailure24Icon,
     StatusInProgress24Icon,
@@ -181,13 +181,13 @@ export const VirPullRequest = defineElement<{
                     ].join(' ')
                   : 'All checks passed.';
 
-        const baseBranchName: string | undefined = isError(
+        const baseBranchName: string | undefined = isAsyncError(
             inputs.pullRequest.branches.headBranch.branchName,
         )
             ? undefined
             : inputs.pullRequest.branches.headBranch.branchName;
 
-        const headBranchName: string | undefined = isError(
+        const headBranchName: string | undefined = isAsyncError(
             inputs.pullRequest.branches.targetBranch.branchName,
         )
             ? undefined

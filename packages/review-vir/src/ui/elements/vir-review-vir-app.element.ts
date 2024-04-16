@@ -5,7 +5,7 @@ import {
     css,
     defineElementNoInputs,
     html,
-    isError,
+    isAsyncError,
     isResolved,
     listen,
     nothing,
@@ -74,7 +74,7 @@ export const VirReviewVirApp = defineElementNoInputs({
         currentRoute: undefined as Readonly<ReviewVirFullRoute> | undefined,
     },
     initCallback({state, updateState}) {
-        state.router.addRouteListener(true, (route) => {
+        state.router.listen(true, (route) => {
             updateState({currentRoute: route});
         });
     },
@@ -85,7 +85,7 @@ export const VirReviewVirApp = defineElementNoInputs({
             return html`
                 <${ViraIcon.assign({icon: LoaderAnimated24Icon})}></${ViraIcon}>
             `;
-        } else if (isError(webClientInterface)) {
+        } else if (isAsyncError(webClientInterface)) {
             return html`
                 <${VirErrorMessage}>${extractErrorMessage(webClientInterface)}</${VirErrorMessage}>
             `;
@@ -101,7 +101,7 @@ export const VirReviewVirApp = defineElementNoInputs({
             return html`
                 <${ViraIcon.assign({icon: LoaderAnimated24Icon})}></${ViraIcon}>
             `;
-        } else if (isError(serviceAuthTokens)) {
+        } else if (isAsyncError(serviceAuthTokens)) {
             return html`
                 <${VirErrorMessage}>${extractErrorMessage(serviceAuthTokens)}</${VirErrorMessage}>
             `;
@@ -116,7 +116,7 @@ export const VirReviewVirApp = defineElementNoInputs({
                 : state.currentRoute || defaultReviewVirFullRoute;
 
         if (!isJsonEqual(currentRoute, state.currentRoute)) {
-            state.router.setRoutes(currentRoute);
+            state.router.setRoute(currentRoute);
         }
 
         const mainContentTemplate =
@@ -144,7 +144,7 @@ export const VirReviewVirApp = defineElementNoInputs({
             <div
                 class="root"
                 ${listen(ChangeRouteEvent, (event) => {
-                    state.router.setRoutes(event.detail.route);
+                    state.router.setRoute(event.detail.route);
                 })}
             >
                 <${VirAppTabs.assign({

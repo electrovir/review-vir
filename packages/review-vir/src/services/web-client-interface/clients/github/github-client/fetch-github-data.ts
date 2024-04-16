@@ -1,6 +1,6 @@
 import {ensureError, randomString, typedObjectFromEntries} from '@augment-vir/common';
 import {isDateAfter} from 'date-vir';
-import {isError} from 'element-vir';
+import {isAsyncError} from 'element-vir';
 import {assertDefined} from 'run-time-assertions';
 import {AuthToken} from '../../../../../data/auth-tokens';
 import {GitData} from '../../../../../data/git/git-data';
@@ -48,7 +48,7 @@ export async function fetchGithubData(
                 if (settledResponse.status === 'fulfilled') {
                     const value = settledResponse.value;
 
-                    if (isError(value)) {
+                    if (isAsyncError(value)) {
                         return [value];
                     } else if (value.data.rateLimit.cost > 1) {
                         costTooHigh = true;
