@@ -230,7 +230,7 @@ export const VirPullRequest = defineElement<{
                     <div class="rows grow">
                         <div class="columns center">
                             <span class="faint no-shrink">
-                                <a href=${inputs.pullRequest.branches.headBranch.repo.htmlUrl}>
+                                <a href=${inputs.pullRequest.branches.headBranch.repo.htmlUrl} target="_blank">
                                     ${inputs.pullRequest.branches.headBranch.repo.repoName}
                                 </a>
                             </span>
