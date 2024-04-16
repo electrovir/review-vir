@@ -123,6 +123,11 @@ export const VirPullRequest = defineElement<{
             gap: 4px;
         }
 
+        .checks-count {
+            display: flex;
+            align-items: center;
+        }
+
         .label {
             opacity: 0.4;
             padding: 1px 8px;
@@ -152,12 +157,12 @@ export const VirPullRequest = defineElement<{
     renderCallback({inputs}) {
         const assignees = Object.values(inputs.pullRequest.users.assignees).filter(isTruthy);
 
-        const checksIconKey: keyof typeof checkIcons =
+        const checksIconKey: keyof typeof checkIcons | undefined =
             inputs.pullRequest.status.checksStatus instanceof Error ||
             inputs.pullRequest.status.hasMergeConflicts
                 ? 'error'
                 : inputs.pullRequest.status.checksStatus.failCount
-                  ? 'fail'
+                  ? undefined
                   : inputs.pullRequest.status.checksStatus.inProgressCount
                     ? 'inProgress'
                     : 'success';
@@ -212,6 +217,30 @@ export const VirPullRequest = defineElement<{
             `;
         });
 
+        const checksTemplate = checksIconKey
+            ? html`
+                  <${ViraIcon.assign({
+                      icon: checkIcons[checksIconKey],
+                  })}
+                      class=${checksIconKey}
+                      title=${checksTitle}
+                  ></${ViraIcon}>
+              `
+            : inputs.pullRequest.status.checksStatus instanceof Error
+              ? html`
+                    <${ViraIcon.assign({
+                        icon: checkIcons.error,
+                    })}
+                        class="error"
+                        title=${checksTitle}
+                    ></${ViraIcon}>
+                `
+              : html`
+                    <div class="checks-count fail" title=${checksTitle}>
+                        ${inputs.pullRequest.status.checksStatus.failCount}
+                    </div>
+                `;
+
         return html`
             ${renderIf(
                 inputs.nested,
@@ -235,12 +264,7 @@ export const VirPullRequest = defineElement<{
                                 </a>
                             </span>
                             <div class="checks">
-                                <${ViraIcon.assign({
-                                    icon: checkIcons[checksIconKey],
-                                })}
-                                    class=${checksIconKey}
-                                    title=${checksTitle}
-                                ></${ViraIcon}>
+                                ${checksTemplate}
                                 <${VirUsers.assign({
                                     users: assignees,
                                     overlap: true,
