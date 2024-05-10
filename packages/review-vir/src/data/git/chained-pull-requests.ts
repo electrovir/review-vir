@@ -1,7 +1,10 @@
 import {getOrSet} from '@augment-vir/common';
+import {FullDate, isDateAfter} from 'date-vir';
 import {PullRequest} from './pull-request';
 
 export type ChainedPullRequest = {
+    needsChainedReviews: boolean;
+    latestChainedUpdate: FullDate;
     pullRequest: PullRequest;
     children: ChainedPullRequest[];
     isChained: boolean;
@@ -18,7 +21,9 @@ export function organizeChainedPullRequests(
             const accumArray = getOrSet(accum, branchName, () => []);
 
             accumArray.push({
-                pullRequest: pullRequest,
+                needsChainedReviews: pullRequest.status.needsReviewFromCurrentUser,
+                latestChainedUpdate: pullRequest.dates.lastUpdated,
+                pullRequest,
                 children: [],
                 isChained: false,
             });
@@ -40,7 +45,21 @@ export function organizeChainedPullRequests(
 
             if (targetPullRequests) {
                 pullRequest.isChained = true;
+
                 targetPullRequests.forEach((targetPullRequest) => {
+                    if (pullRequest.pullRequest.status.needsReviewFromCurrentUser) {
+                        targetPullRequest.needsChainedReviews = true;
+                    }
+                    if (
+                        isDateAfter({
+                            fullDate: pullRequest.pullRequest.dates.lastUpdated,
+                            relativeTo: targetPullRequest.latestChainedUpdate,
+                        })
+                    ) {
+                        targetPullRequest.latestChainedUpdate =
+                            pullRequest.pullRequest.dates.lastUpdated;
+                    }
+
                     targetPullRequest.children.push(pullRequest);
                 });
             }
@@ -49,5 +68,11 @@ export function organizeChainedPullRequests(
 
     return Object.values(chainedPullRequests)
         .flat()
+        .sort((a, b) => {
+            return isDateAfter({fullDate: a.latestChainedUpdate, relativeTo: b.latestChainedUpdate})
+                ? -1
+                : 1;
+        })
+        .sort((a, b) => Number(b.needsChainedReviews) - Number(a.needsChainedReviews))
         .filter((chainedPullRequest) => !chainedPullRequest.isChained);
 }
