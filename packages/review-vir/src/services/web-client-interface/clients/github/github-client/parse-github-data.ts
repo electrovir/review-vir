@@ -153,18 +153,12 @@ function determineIfNeedsReviewFromCurrentUser(
 }
 
 function parseReviews(
-    raw: Readonly<
-        Pick<
-            GithubSearchPullRequest,
-            'latestOpinionatedReviews' | 'reviewRequests' | 'latestReviews'
-        >
-    >,
+    raw: Readonly<Pick<GithubSearchPullRequest, 'latestOpinionatedReviews' | 'reviewRequests'>>,
 ): PullRequest['users']['reviewers'] {
     const pendingReviewers = groupUsersByUserName(
         raw.reviewRequests.nodes.map((node) => parseGithubUser(node.requestedReviewer)),
     );
 
-    const latestReviews = arrayToObject(raw.latestReviews.nodes, (review) => review.author.login);
     const latestOpinionatedReviews = arrayToObject(
         raw.latestOpinionatedReviews.nodes,
         (review) => review.author.login,
@@ -173,17 +167,13 @@ function parseReviews(
     const allUsernames = Array.from(
         new Set([
             ...Object.keys(pendingReviewers),
-            ...Object.keys(latestReviews),
             ...Object.keys(latestOpinionatedReviews),
         ]),
     );
 
     return typedObjectFromEntries(
         allUsernames.map((username): [string, PullRequestReview] => {
-            const user =
-                pendingReviewers[username] ||
-                latestReviews[username]?.author ||
-                latestOpinionatedReviews[username]?.author;
+            const user = pendingReviewers[username] || latestOpinionatedReviews[username]?.author;
 
             if (!user) {
                 throw new Error(`Failed to find user '${username}'`);
