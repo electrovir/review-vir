@@ -6,10 +6,10 @@ import {VirUser} from './vir-user.element';
 export const VirUsers = defineElement<{
     users: ReadonlyArray<Readonly<User>>;
     holdStatusSpace?: boolean | undefined;
-    statuses?:
+    reviews?:
         | undefined
         | Readonly<{
-              [username in string]: PullRequestReview['reviewStatus'] | undefined;
+              [username in string]: Readonly<Omit<PullRequestReview, 'user'>> | undefined;
           }>;
     overlap: boolean;
 }>()({
@@ -44,7 +44,7 @@ export const VirUsers = defineElement<{
                         username: false,
                         statusSpace: inputs.holdStatusSpace,
                     },
-                    status: inputs.statuses?.[user.username],
+                    review: inputs.reviews?.[user.username],
                 })}></${VirUser}>
             `;
         });

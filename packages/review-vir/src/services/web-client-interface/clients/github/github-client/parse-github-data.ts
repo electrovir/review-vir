@@ -1,4 +1,10 @@
-import {arrayToObject, typedArrayIncludes, typedObjectFromEntries} from '@augment-vir/common';
+import {
+    arrayToObject,
+    removePrefix,
+    safeMatch,
+    typedArrayIncludes,
+    typedObjectFromEntries,
+} from '@augment-vir/common';
 import {createFullDateInUserTimezone} from 'date-vir';
 import {hasProperty} from 'run-time-assertions';
 import {SupportedServiceName} from '../../../../../data/auth-tokens';
@@ -37,9 +43,10 @@ export function parseGithubSearchPullRequest(
     const assignees = raw.assignees.nodes.map(parseGithubUser);
     const authors = [parseGithubUser(raw.author)];
 
+    const primaryReviewers = parsePrimaryReviewers(raw.bodyText);
     const pullRequestUsers: PullRequest['users'] = {
         assignees: groupUsersByUserName(assignees.length ? assignees : authors),
-        reviewers: parseReviews(raw),
+        reviewers: parseReviews(primaryReviewers, raw),
     };
 
     const mergeStatus: PullRequestMergeStatus = raw.mergedAt
@@ -107,6 +114,7 @@ export function parseGithubSearchPullRequest(
                 currentUser,
                 pullRequestUsers,
             ),
+            userIsPrimaryReviewer: primaryReviewers.includes(currentUser.username),
             hasMergeConflicts: raw.mergeable === GithubMergeableState.Conflicting,
             labels: raw.labels
                 ? raw.labels.nodes.map((node) => {
@@ -153,6 +161,7 @@ function determineIfNeedsReviewFromCurrentUser(
 }
 
 function parseReviews(
+    primaryReviewers: ReadonlyArray<string>,
     raw: Readonly<Pick<GithubSearchPullRequest, 'latestOpinionatedReviews' | 'reviewRequests'>>,
 ): PullRequest['users']['reviewers'] {
     const pendingReviewers = groupUsersByUserName(
@@ -196,6 +205,7 @@ function parseReviews(
                         profileUrl: user.avatarUrl || '',
                         username,
                     },
+                    isPrimaryReviewer: primaryReviewers.includes(username),
                     reviewStatus,
                 },
             ];
@@ -243,4 +253,19 @@ export function parseGithubUser(raw: GithubUserSearchResponse): User {
 
 function groupUsersByUserName(users: ReadonlyArray<Readonly<User>>) {
     return arrayToObject(users, (user) => user.username);
+}
+
+function parsePrimaryReviewers(body: string): string[] {
+    const [
+        ,
+        match,
+    ] = safeMatch(body, /primary reviewers?((?:[^@]+?@\w+)+)/i);
+
+    if (!match) {
+        return [];
+    }
+
+    const userTags = Array.from(match.matchAll(/@\w+/g));
+
+    return userTags.map((userTag) => removePrefix({value: userTag[0], prefix: '@'}));
 }

@@ -38,6 +38,7 @@ export type PullRequestChecks = typeof pullRequestChecksShape.runTimeType;
 export const pullRequestReviewShape = defineShape(
     {
         user: userShape,
+        isPrimaryReviewer: false,
         reviewStatus: enumShape(PullRequestReviewStatus),
     },
     true,
@@ -77,6 +78,7 @@ export const pullRequestShape = defineShape({
         mergeStatus: enumShape(PullRequestMergeStatus),
         mergedBy: or(undefined, userShape),
         needsReviewFromCurrentUser: false,
+        userIsPrimaryReviewer: false,
         labels: [
             {
                 name: '',

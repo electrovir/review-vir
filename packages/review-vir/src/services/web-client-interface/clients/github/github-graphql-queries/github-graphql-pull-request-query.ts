@@ -108,6 +108,7 @@ export const githubPullRequestSearchResponseShape = defineShape(
                 },
             },
         ),
+        bodyText: '',
         mergeable: enumShape(GithubMergeableState),
         headRef: or(
             /** `null` means lack of permissions to read "Contents". */
@@ -279,6 +280,7 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                 ... on PullRequest {
                     number
                     id
+                    bodyText
                     isDraft
                     title
                     author {

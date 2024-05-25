@@ -1,4 +1,4 @@
-import {extractErrorMessage, isTruthy, mapObjectValues} from '@augment-vir/common';
+import {extractErrorMessage, isTruthy} from '@augment-vir/common';
 import {classMap, css, defineElement, html, isAsyncError, renderIf, unsafeCSS} from 'element-vir';
 import {
     StatusFailure24Icon,
@@ -66,6 +66,9 @@ export const VirPullRequest = defineElement<{
 
         .pull-request.needs-review {
             border-color: dodgerblue;
+        }
+        .pull-request.primary-reviewer {
+            border-color: red;
         }
 
         .pull-request.is-draft {
@@ -251,6 +254,7 @@ export const VirPullRequest = defineElement<{
             <div
                 class="pull-request rows grow ${classMap({
                     'needs-review': inputs.pullRequest.status.needsReviewFromCurrentUser,
+                    'primary-reviewer': inputs.pullRequest.status.userIsPrimaryReviewer,
                     'is-draft':
                         inputs.pullRequest.status.mergeStatus === PullRequestMergeStatus.Draft,
                 })}"
@@ -342,18 +346,12 @@ export const VirPullRequest = defineElement<{
 
 function calculateReviewers(
     reviewers: Readonly<PullRequest['users']['reviewers']>,
-): Pick<(typeof VirUsers)['inputsType'], 'users' | 'statuses'> {
-    const statuses: (typeof VirUsers)['inputsType']['statuses'] = mapObjectValues(
-        reviewers,
-        (key, value) => {
-            return value?.reviewStatus;
-        },
-    );
+): Pick<(typeof VirUsers)['inputsType'], 'users' | 'reviews'> {
     const users: Readonly<User>[] = Object.values(reviewers)
         .map((reviewer) => reviewer?.user)
         .filter(isTruthy);
 
-    return {statuses, users};
+    return {reviews: reviewers, users};
 }
 
 const checkIcons = {
