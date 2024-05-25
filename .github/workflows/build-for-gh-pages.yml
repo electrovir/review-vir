@@ -19,7 +19,8 @@ jobs:
                   REVIEW_VIR_ENCRYPTION_KEY: ${{ secrets.REVIEW_VIR_ENCRYPTION_KEY }}
               run: |
                   npm ci
-                  npm run build --workspace @review-vir/review-vir
+                  npm run compile
+                  npm run build
             - uses: JamesIves/github-pages-deploy-action@v4.5.0
               with:
                   branch: 'gh-pages'

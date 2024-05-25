@@ -12,10 +12,5 @@
         "./test-files",
         "./ts.out"
     ],
-    "extends": "../../configs/tsconfig.base.json",
-    "references": [
-        {
-            "path": "../common"
-        }
-    ]
+    "extends": "../../configs/tsconfig.base.json"
 }

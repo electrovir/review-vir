@@ -1,10 +1,5 @@
-import {
-    arrayToObject,
-    removePrefix,
-    safeMatch,
-    typedArrayIncludes,
-    typedObjectFromEntries,
-} from '@augment-vir/common';
+import {arrayToObject, typedArrayIncludes, typedObjectFromEntries} from '@augment-vir/common';
+import {parsePrimaryReviewers} from '@review-vir/common';
 import {createFullDateInUserTimezone} from 'date-vir';
 import {hasProperty} from 'run-time-assertions';
 import {SupportedServiceName} from '../../../../../data/auth-tokens';
@@ -43,7 +38,7 @@ export function parseGithubSearchPullRequest(
     const assignees = raw.assignees.nodes.map(parseGithubUser);
     const authors = [parseGithubUser(raw.author)];
 
-    const primaryReviewers = parsePrimaryReviewers(raw.bodyText);
+    const primaryReviewers = parsePrimaryReviewers(raw);
     const pullRequestUsers: PullRequest['users'] = {
         assignees: groupUsersByUserName(assignees.length ? assignees : authors),
         reviewers: parseReviews(primaryReviewers, raw),
@@ -253,19 +248,4 @@ export function parseGithubUser(raw: GithubUserSearchResponse): User {
 
 function groupUsersByUserName(users: ReadonlyArray<Readonly<User>>) {
     return arrayToObject(users, (user) => user.username);
-}
-
-export function parsePrimaryReviewers(body: string): string[] {
-    const [
-        ,
-        match,
-    ] = safeMatch(body, /primary reviewers?((?:[^@]*@[\w\-_\d]+(?:[\s\n]|$))+)/i);
-
-    if (!match) {
-        return [];
-    }
-
-    const userTags = Array.from(match.matchAll(/@[\w\-\d]+/g));
-
-    return userTags.map((userTag) => removePrefix({value: userTag[0], prefix: '@'}));
 }
