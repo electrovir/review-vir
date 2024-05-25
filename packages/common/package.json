@@ -5,10 +5,7 @@
     "bugs": {
         "url": "https://github.com/review-vir/review-vir/issues"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/review-vir/review-vir"
-    },
+    "repository": "git+https://github.com/review-vir/review-vir.git",
     "license": "(MIT or CC0 1.0)",
     "author": {
         "name": "electrovir",

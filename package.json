@@ -18,7 +18,7 @@
         "start": "npm start --workspace @review-vir/review-vir",
         "test": "mono-vir for-each-async npm run test:all",
         "test:all": "npm run compile && concurrently --colors --kill-others-on-fail -c auto --names tests,spelling,format,deps \"npm run test\" \"npm run test:spelling\" \"npm run test:format\" \"npm run test:deps\"",
-        "test:deps": "echo \"temporarily disabled\"",
+        "test:deps": "virmator deps check",
         "test:format": "virmator format check",
         "test:spelling": "virmator spellcheck",
         "test:types": "npm run compile"
