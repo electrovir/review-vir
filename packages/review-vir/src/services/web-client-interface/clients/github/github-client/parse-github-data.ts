@@ -255,17 +255,17 @@ function groupUsersByUserName(users: ReadonlyArray<Readonly<User>>) {
     return arrayToObject(users, (user) => user.username);
 }
 
-function parsePrimaryReviewers(body: string): string[] {
+export function parsePrimaryReviewers(body: string): string[] {
     const [
         ,
         match,
-    ] = safeMatch(body, /primary reviewers?((?:[^@]+?@\w+)+)/i);
+    ] = safeMatch(body, /primary reviewers?((?:[^@]*@[\w\-_\d]+(?:[\s\n]|$))+)/i);
 
     if (!match) {
         return [];
     }
 
-    const userTags = Array.from(match.matchAll(/@\w+/g));
+    const userTags = Array.from(match.matchAll(/@[\w\-\d]+/g));
 
     return userTags.map((userTag) => removePrefix({value: userTag[0], prefix: '@'}));
 }
