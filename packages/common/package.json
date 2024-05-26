@@ -1,6 +1,6 @@
 {
     "name": "@review-vir/common",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "homepage": "https://github.com/review-vir/review-vir",
     "bugs": {
         "url": "https://github.com/review-vir/review-vir/issues"
@@ -11,7 +11,8 @@
         "name": "electrovir",
         "url": "https://github.com/electrovir"
     },
-    "module": "dist/index.js",
+    "type": "module",
+    "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "npm run docs && mkdir -p ../../dist-pages/common && cp -r ./dist-pages/* ../../dist-pages/common/",
