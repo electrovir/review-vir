@@ -32,5 +32,16 @@ describe(parsePrimaryReviewers.name, () => {
             },
             expect: [],
         },
+        {
+            it: 'handles markdown formatting',
+            input: {
+                bodyText:
+                    'https://my-ticket-url.com/ticket-number\n**Primary reviewer**: @name1\n@my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
+            },
+            expect: [
+                'name1',
+                'my-name2',
+            ],
+        },
     ]);
 });
