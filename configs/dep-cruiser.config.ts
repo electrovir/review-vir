@@ -9,12 +9,6 @@ const baseConfig = generateDepCruiserConfig({
                 'src/index.ts',
             ],
         },
-        'not-to-unresolvable': {
-            to: [
-                /** I don't know why dependency cruiser thinks this dependency is unresolvable. */
-                '@review-vir/common',
-            ],
-        },
     },
     omitRules: [
         // enter rule names here to omit
