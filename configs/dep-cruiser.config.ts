@@ -11,6 +11,7 @@ const baseConfig = generateDepCruiserConfig({
         },
         'not-to-unresolvable': {
             to: [
+                /** I don't know why dependency cruiser thinks this dependency is unresolvable. */
                 '@review-vir/common',
             ],
         },

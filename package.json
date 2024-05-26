@@ -1,7 +1,12 @@
 {
     "name": "@review-vir/mono-repo",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "private": true,
+    "homepage": "https://github.com/review-vir/review-vir",
+    "bugs": {
+        "url": "https://github.com/review-vir/review-vir/issues"
+    },
+    "repository": "git+https://github.com/review-vir/review-vir.git",
     "license": "(MIT or CC0 1.0)",
     "author": {
         "name": "electrovir",
