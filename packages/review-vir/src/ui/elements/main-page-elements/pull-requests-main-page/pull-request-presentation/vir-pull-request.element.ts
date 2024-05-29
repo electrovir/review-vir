@@ -67,7 +67,7 @@ export const VirPullRequest = defineElement<{
         .pull-request.needs-review {
             border-color: dodgerblue;
         }
-        .pull-request.primary-reviewer {
+        .pull-request.needs-review.primary-reviewer {
             border-color: red;
         }
 
