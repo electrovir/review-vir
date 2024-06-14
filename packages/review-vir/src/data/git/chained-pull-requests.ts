@@ -88,8 +88,14 @@ export function organizeChainedPullRequests(
             // as primary reviewer on the top
             .sort((a, b) => {
                 return (
-                    Number(b.pullRequest.status.userIsPrimaryReviewer) -
-                    Number(a.pullRequest.status.userIsPrimaryReviewer)
+                    Number(
+                        b.pullRequest.status.userIsPrimaryReviewer &&
+                            b.pullRequest.status.needsReviewFromCurrentUser,
+                    ) -
+                    Number(
+                        a.pullRequest.status.userIsPrimaryReviewer &&
+                            a.pullRequest.status.needsReviewFromCurrentUser,
+                    )
                 );
             })
             // drafts on the bottom
