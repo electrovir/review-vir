@@ -1,6 +1,6 @@
 import {getOrSet} from '@augment-vir/common';
-import {FullDate, isDateAfter} from 'date-vir';
-import {PullRequest} from './pull-request';
+import {FullDate, isDateAfter, toTimestamp} from 'date-vir';
+import {PullRequest, PullRequestMergeStatus} from './pull-request';
 
 export type ChainedPullRequest = {
     needsChainedReviews: boolean;
@@ -66,13 +66,40 @@ export function organizeChainedPullRequests(
         });
     });
 
-    return Object.values(chainedPullRequests)
-        .flat()
-        .sort((a, b) => {
-            return isDateAfter({fullDate: a.latestChainedUpdate, relativeTo: b.latestChainedUpdate})
-                ? -1
-                : 1;
-        })
-        .sort((a, b) => Number(b.needsChainedReviews) - Number(a.needsChainedReviews))
-        .filter((chainedPullRequest) => !chainedPullRequest.isChained);
+    return (
+        Object.values(chainedPullRequests)
+            .flat()
+            // most recent updates on the bottom
+            .sort((a, b) => {
+                return (
+                    toTimestamp(a.pullRequest.dates.lastUpdated) -
+                    toTimestamp(b.pullRequest.dates.lastUpdated)
+                );
+            })
+            // needs your review on top
+            .sort((a, b) => {
+                return (
+                    Number(b.pullRequest.status.needsReviewFromCurrentUser) -
+                    Number(a.pullRequest.status.needsReviewFromCurrentUser)
+                );
+            })
+            // needs chained review on top
+            .sort((a, b) => Number(b.needsChainedReviews) - Number(a.needsChainedReviews))
+            // as primary reviewer on the top
+            .sort((a, b) => {
+                return (
+                    Number(b.pullRequest.status.userIsPrimaryReviewer) -
+                    Number(a.pullRequest.status.userIsPrimaryReviewer)
+                );
+            })
+            // drafts on the bottom
+            .sort((a, b) => {
+                return (
+                    Number(a.pullRequest.status.mergeStatus === PullRequestMergeStatus.Draft) -
+                    Number(b.pullRequest.status.mergeStatus === PullRequestMergeStatus.Draft)
+                );
+            })
+
+            .filter((chainedPullRequest) => !chainedPullRequest.isChained)
+    );
 }
