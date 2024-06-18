@@ -14,7 +14,7 @@ describe(parsePrimaryReviewers.name, () => {
             expect: ['my-name'],
         },
         {
-            it: 'handles an actual pull request body',
+            it: 'handles multiple primaries separated by new lines',
             input: {
                 bodyText:
                     'https://my-ticket-url.com/ticket-number\nPrimary reviewer:\n@my-name1\n@my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
@@ -22,6 +22,26 @@ describe(parsePrimaryReviewers.name, () => {
             expect: [
                 'my-name1',
                 'my-name2',
+            ],
+        },
+        {
+            it: 'handles multiple primaries separated by commas',
+            input: {
+                bodyText:
+                    'https://my-ticket-url.com/ticket-number\nPrimary reviewer: @my-name1, @my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
+            },
+            expect: [
+                'my-name1',
+                'my-name2',
+            ],
+        },
+        {
+            it: 'ignores a later tag',
+            input: {
+                bodyText: '**Primary Reviewer**: @person Changes - ask @another for help',
+            },
+            expect: [
+                'person',
             ],
         },
         {

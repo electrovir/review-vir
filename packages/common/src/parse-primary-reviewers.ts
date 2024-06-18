@@ -14,7 +14,7 @@ export function parsePrimaryReviewers({bodyText}: {bodyText: string}): string[] 
     const [
         ,
         match,
-    ] = safeMatch(bodyText, /primary reviewers?((?:[^@]*@[\w\-_\d]+(?:[\s\n]|$))+)/i);
+    ] = safeMatch(bodyText, /primary reviewers?\W+((?:@[^@\s]+(?:[\s\n]|$))+)/i);
 
     if (!match) {
         return [];

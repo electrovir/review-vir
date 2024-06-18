@@ -1,6 +1,6 @@
 {
     "name": "@review-vir/mono-repo",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "private": true,
     "homepage": "https://github.com/review-vir/review-vir",
     "bugs": {
