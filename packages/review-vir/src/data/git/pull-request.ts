@@ -7,9 +7,9 @@ import {
     or,
     unknownShape,
 } from 'object-shape-tester';
-import {SupportedServiceName} from '../auth-tokens';
-import {gitBranchShape} from './git-branch';
-import {userShape} from './user';
+import {SupportedServiceName} from '../auth-tokens.js';
+import {gitBranchShape} from './git-branch.js';
+import {userShape} from './user.js';
 
 export enum PullRequestMergeStatus {
     Draft = 'draft',
@@ -33,7 +33,7 @@ const pullRequestChecksShape = defineShape(
     },
     true,
 );
-export type PullRequestChecks = typeof pullRequestChecksShape.runTimeType;
+export type PullRequestChecks = typeof pullRequestChecksShape.runtimeType;
 
 export const pullRequestReviewShape = defineShape(
     {
@@ -43,7 +43,7 @@ export const pullRequestReviewShape = defineShape(
     },
     true,
 );
-export type PullRequestReview = typeof pullRequestReviewShape.runTimeType;
+export type PullRequestReview = typeof pullRequestReviewShape.runtimeType;
 
 export const pullRequestShape = defineShape({
     id: {
@@ -108,4 +108,4 @@ export const pullRequestShape = defineShape({
     raw: unknownShape(),
 });
 
-export type PullRequest = typeof pullRequestShape.runTimeType;
+export type PullRequest = typeof pullRequestShape.runtimeType;

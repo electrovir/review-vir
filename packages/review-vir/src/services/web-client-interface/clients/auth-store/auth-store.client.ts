@@ -1,4 +1,5 @@
-import {getEnumTypedValues, isTruthy, typedObjectFromEntries} from '@augment-vir/common';
+import {check} from '@augment-vir/assert';
+import {getEnumValues, typedObjectFromEntries} from '@augment-vir/common';
 import {globalVars} from '@review-vir/review-vir/src/data/global-vars';
 import {defineClient} from 'generic-client-interface';
 import localForage from 'localforage-esm';
@@ -9,8 +10,8 @@ import {
     EncryptedAuthToken,
     SupportedServiceName,
     authTokenShape,
-} from '../../../../data/auth-tokens';
-import {decrypt, encrypt} from '../../../../util/encryption';
+} from '../../../../data/auth-tokens.js';
+import {decrypt, encrypt} from '../../../../util/encryption.js';
 
 export const reviewVirAuthTokensStore = localForage.createInstance({
     description: 'Store for review-vir auth tokens.',
@@ -42,7 +43,7 @@ export async function loadServiceAuthTokens({
         return typedObjectFromEntries(
             (
                 await Promise.all(
-                    getEnumTypedValues(SupportedServiceName).map(
+                    getEnumValues(SupportedServiceName).map(
                         async (
                             serviceName,
                         ): Promise<
@@ -75,7 +76,7 @@ export async function loadServiceAuthTokens({
                                         );
                                     }),
                                 )
-                            ).filter(isTruthy);
+                            ).filter(check.isTruthy);
 
                             return [
                                 serviceName,
@@ -84,9 +85,9 @@ export async function loadServiceAuthTokens({
                         },
                     ),
                 )
-            ).filter(isTruthy),
+            ).filter(check.isTruthy),
         );
-    } catch (error) {
+    } catch {
         console.error('Failed to load auth tokens. Wiping store.');
         await reviewVirAuthTokensStore.clear();
         return {};
@@ -123,7 +124,7 @@ export async function saveServiceAuthTokens({
     }
 
     await Promise.all(
-        getEnumTypedValues(SupportedServiceName).map(async (serviceName) => {
+        getEnumValues(SupportedServiceName).map(async (serviceName) => {
             const authTokens = authTokensByService[serviceName];
 
             if (authTokens) {
@@ -139,7 +140,6 @@ export async function saveServiceAuthTokens({
                 await reviewVirAuthTokensStore.setItem(serviceName, encryptedAuthTokens);
             } else {
                 await reviewVirAuthTokensStore.removeItem(serviceName);
-                return;
             }
         }),
     );

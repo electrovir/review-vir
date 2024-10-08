@@ -1,4 +1,5 @@
-import {extractErrorMessage, getEnumTypedValues, isObject} from '@augment-vir/common';
+import {check} from '@augment-vir/assert';
+import {extractErrorMessage, getEnumValues} from '@augment-vir/common';
 import {css, defineElement, defineElementEvent, html, listen} from 'element-vir';
 import {ViraButton, ViraButtonStyleEnum} from 'vira';
 import {
@@ -6,13 +7,13 @@ import {
     AuthTokensByService,
     SupportedServiceName,
     assertValidAuthTokensByService,
-} from '../../../../data/auth-tokens';
-import {defaultReviewVirFullRoute} from '../../../../data/routing/vir-route';
-import {ChangeRouteEvent} from '../../../events/change-route.event';
+} from '../../../../data/auth-tokens.js';
+import {defaultReviewVirFullRoute} from '../../../../data/routing/vir-route.js';
+import {ChangeRouteEvent} from '../../../events/change-route.event.js';
 import {
     AuthTokenEntryError,
     VirServiceAuthTokenEntry,
-} from './vir-service-auth-token-entry.element';
+} from './vir-service-auth-token-entry.element.js';
 
 export const VirAuthTokenEntryMainPage = defineElement<{
     authTokens: Readonly<AuthTokensByService>;
@@ -49,22 +50,23 @@ export const VirAuthTokenEntryMainPage = defineElement<{
             updateState({currentAuthTokenEntry: inputs.authTokens});
         }
 
-        const serviceAuthTokenEntryTemplates = getEnumTypedValues(SupportedServiceName).map(
+        const serviceAuthTokenEntryTemplates = getEnumValues(SupportedServiceName).map(
             (serviceName) => {
                 const currentAuthTokens = state.currentAuthTokenEntry?.[serviceName];
 
-                const authTokens =
-                    currentAuthTokens == undefined || !currentAuthTokens.length
-                        ? [
-                              {
-                                  authTokenName: '',
-                                  authTokenSecret: '',
-                              },
-                          ]
-                        : currentAuthTokens;
+                const authTokens = currentAuthTokens?.length
+                    ? currentAuthTokens
+                    : [
+                          {
+                              authTokenName: '',
+                              authTokenSecret: '',
+                          },
+                      ];
 
                 const authTokenEntryError =
-                    isObject(state.errorMessage) && state.errorMessage.serviceName === serviceName
+                    check.isObject(state.errorMessage) &&
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                    state.errorMessage.serviceName === serviceName
                         ? state.errorMessage
                         : undefined;
 

@@ -1,5 +1,5 @@
 import {defineShape, enumShape, or} from 'object-shape-tester';
-import {githubGraphqlErrorShape} from './github-graphql-error';
+import {githubGraphqlErrorShape} from './github-graphql-error.js';
 
 /**
  * This was pulled out of the actual GraphQL responses. They almost match `NonNullable<
@@ -69,7 +69,7 @@ const githubUserSearchResponseShape = defineShape(
     },
     true,
 );
-export type GithubUserSearchResponse = typeof githubUserSearchResponseShape.runTimeType;
+export type GithubUserSearchResponse = typeof githubUserSearchResponseShape.runtimeType;
 
 const githubRunCheckStateShape = defineShape(
     {
@@ -78,7 +78,7 @@ const githubRunCheckStateShape = defineShape(
     },
     true,
 );
-export type GithubRunCheckState = typeof githubRunCheckStateShape.runTimeType;
+export type GithubRunCheckState = typeof githubRunCheckStateShape.runtimeType;
 
 const githubReviewShape = defineShape(
     {
@@ -160,12 +160,7 @@ export const githubPullRequestSearchResponseShape = defineShape(
                                 null,
                                 {
                                     contexts: {
-                                        checkRunCountsByState: [
-                                            {
-                                                count: 0,
-                                                state: enumShape(GithubGraphqlCheckRunConclusion),
-                                            },
-                                        ],
+                                        checkRunCountsByState: [githubRunCheckStateShape],
                                     },
                                 },
                             ),
@@ -211,7 +206,7 @@ export const githubPullRequestSearchResponseShape = defineShape(
     },
     true,
 );
-export type GithubSearchPullRequest = typeof githubPullRequestSearchResponseShape.runTimeType;
+export type GithubSearchPullRequest = typeof githubPullRequestSearchResponseShape.runtimeType;
 
 /**
  * This shape is comes straight from an actual GitHub response to the below GraphQL query. If the
@@ -246,7 +241,7 @@ export const githubPullRequestGraphqlResponseShape = defineShape(
 );
 
 export type GithubPullRequestGraphqlResponse =
-    typeof githubPullRequestGraphqlResponseShape.runTimeType;
+    typeof githubPullRequestGraphqlResponseShape.runtimeType;
 
 /**
  * This query determines the above shape definition. If this query changes, make sure to change that

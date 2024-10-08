@@ -1,17 +1,17 @@
+import {assert} from '@augment-vir/assert';
 import {ensureError, randomString, typedObjectFromEntries} from '@augment-vir/common';
 import {isDateAfter} from 'date-vir';
 import {isAsyncError} from 'element-vir';
-import {assertDefined} from 'run-time-assertions';
-import {AuthToken} from '../../../../../data/auth-tokens';
-import {GitData} from '../../../../../data/git/git-data';
-import {PullRequest} from '../../../../../data/git/pull-request';
-import {User} from '../../../../../data/git/user';
-import {fetchGithubGraphql} from '../github-fetch-graphql';
+import {AuthToken} from '../../../../../data/auth-tokens.js';
+import {GitData} from '../../../../../data/git/git-data.js';
+import {PullRequest} from '../../../../../data/git/pull-request.js';
+import {User} from '../../../../../data/git/user.js';
+import {fetchGithubGraphql} from '../github-fetch-graphql.js';
 import {
     GithubGraphqlQueryType,
     GithubGraphqlSearchQuery,
-} from '../github-graphql-queries/github-graphql-queries';
-import {parseGithubSearchPullRequest, parseGithubUser} from './parse-github-data';
+} from '../github-graphql-queries/github-graphql-queries.js';
+import {parseGithubSearchPullRequest, parseGithubUser} from './parse-github-data.js';
 
 let costTooHigh = false;
 
@@ -57,7 +57,7 @@ export async function fetchGithubData(
                         user = parseGithubUser(value.data.viewer);
                     }
                     return value.data.search.nodes.map((rawPullRequest) => {
-                        assertDefined(user);
+                        assert.isDefined(user);
 
                         return parseGithubSearchPullRequest(
                             value.authTokenName,

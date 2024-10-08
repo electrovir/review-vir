@@ -1,16 +1,16 @@
-import {arrayToObject, typedArrayIncludes, typedObjectFromEntries} from '@augment-vir/common';
+import {check} from '@augment-vir/assert';
+import {arrayToObject, typedObjectFromEntries} from '@augment-vir/common';
 import {parsePrimaryReviewers} from '@review-vir/common';
 import {createFullDateInUserTimezone} from 'date-vir';
-import {hasProperty} from 'run-time-assertions';
-import {SupportedServiceName} from '../../../../../data/auth-tokens';
+import {SupportedServiceName} from '../../../../../data/auth-tokens.js';
 import {
     PullRequest,
     PullRequestChecks,
     PullRequestMergeStatus,
     PullRequestReview,
     PullRequestReviewStatus,
-} from '../../../../../data/git/pull-request';
-import {User} from '../../../../../data/git/user';
+} from '../../../../../data/git/pull-request.js';
+import {User} from '../../../../../data/git/user.js';
 import {
     GithubGraphqlReviewState,
     GithubMergeableState,
@@ -21,7 +21,7 @@ import {
     failedCheckRunConclusions,
     pendingCheckRunConclusions,
     successCheckRunConclusions,
-} from '../github-graphql-queries/github-graphql-pull-request-query';
+} from '../github-graphql-queries/github-graphql-pull-request-query.js';
 
 export function parseGithubSearchPullRequest(
     authTokenName: string,
@@ -61,7 +61,7 @@ export function parseGithubSearchPullRequest(
             headBranch: {
                 branchName: raw.headRef?.name || new Error("Missing 'Contents' read permissions."),
                 headCommitHash:
-                    raw.headRef?.target?.oid || new Error("Missing 'Contents' read permissions."),
+                    raw.headRef?.target.oid || new Error("Missing 'Contents' read permissions."),
                 repo: {
                     isArchived: raw.headRepository.isArchived,
                     isPrivate: raw.headRepository.isPrivate,
@@ -73,7 +73,7 @@ export function parseGithubSearchPullRequest(
             targetBranch: {
                 branchName: raw.baseRef?.name || new Error("Missing 'Contents' read permissions."),
                 headCommitHash:
-                    raw.baseRef?.target?.oid || new Error("Missing 'Contents' read permissions."),
+                    raw.baseRef?.target.oid || new Error("Missing 'Contents' read permissions."),
                 repo: {
                     isArchived: raw.baseRepository.isArchived,
                     isPrivate: raw.baseRepository.isPrivate,
@@ -163,10 +163,12 @@ function parseReviews(
         raw.reviewRequests.nodes.map((node) => parseGithubUser(node.requestedReviewer)),
     );
 
-    const latestOpinionatedReviews = arrayToObject(
-        raw.latestOpinionatedReviews.nodes,
-        (review) => review.author.login,
-    );
+    const latestOpinionatedReviews = arrayToObject(raw.latestOpinionatedReviews.nodes, (review) => {
+        return {
+            key: review.author.login,
+            value: review,
+        };
+    });
 
     const allUsernames = Array.from(
         new Set([
@@ -183,7 +185,7 @@ function parseReviews(
                 throw new Error(`Failed to find user '${username}'`);
             }
 
-            const reviewStatus: PullRequestReviewStatus = hasProperty(pendingReviewers, username)
+            const reviewStatus: PullRequestReviewStatus = check.hasKey(pendingReviewers, username)
                 ? PullRequestReviewStatus.Pending
                 : latestOpinionatedReviews[username]?.state === GithubGraphqlReviewState.Approved
                   ? PullRequestReviewStatus.Accepted
@@ -217,11 +219,11 @@ function parseStates(
 
     const results = checkStates.reduce(
         (accum, checkState) => {
-            if (typedArrayIncludes(failedCheckRunConclusions, checkState.state)) {
+            if (check.hasValue(failedCheckRunConclusions, checkState.state)) {
                 accum.failCount += checkState.count;
-            } else if (typedArrayIncludes(pendingCheckRunConclusions, checkState.state)) {
+            } else if (check.hasValue(pendingCheckRunConclusions, checkState.state)) {
                 accum.inProgressCount += checkState.count;
-            } else if (typedArrayIncludes(successCheckRunConclusions, checkState.state)) {
+            } else if (check.hasValue(successCheckRunConclusions, checkState.state)) {
                 accum.successCount += checkState.count;
             }
             accum.totalCount++;
@@ -247,5 +249,10 @@ export function parseGithubUser(raw: GithubUserSearchResponse): User {
 }
 
 function groupUsersByUserName(users: ReadonlyArray<Readonly<User>>) {
-    return arrayToObject(users, (user) => user.username);
+    return arrayToObject(users, (user) => {
+        return {
+            key: user.username,
+            value: user,
+        };
+    });
 }

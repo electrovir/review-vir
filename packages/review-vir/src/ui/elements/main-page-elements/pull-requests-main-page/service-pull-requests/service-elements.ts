@@ -1,7 +1,7 @@
 import {DeclarativeElementDefinition} from 'element-vir';
-import {AuthToken, SupportedServiceName} from '../../../../../data/auth-tokens';
-import {WebClientInterface} from '../../../../../services/web-client-interface/web-client-interface';
-import {VirGithubPullRequests} from './vir-github-pull-requests.element';
+import {AuthToken, SupportedServiceName} from '../../../../../data/auth-tokens.js';
+import {WebClientInterface} from '../../../../../services/web-client-interface/web-client-interface.js';
+import {VirGithubPullRequests} from './vir-github-pull-requests.element.js';
 
 export const serviceElements: Readonly<
     Record<
@@ -11,12 +11,7 @@ export const serviceElements: Readonly<
             Readonly<{
                 authTokens: ReadonlyArray<Readonly<AuthToken>>;
                 webClientInterface: Readonly<WebClientInterface>;
-            }>,
-            any,
-            any,
-            any,
-            any,
-            any
+            }>
         >
     >
 > = {

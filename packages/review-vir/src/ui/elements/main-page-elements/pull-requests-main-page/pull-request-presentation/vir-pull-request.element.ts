@@ -1,4 +1,5 @@
-import {extractErrorMessage, isTruthy} from '@augment-vir/common';
+import {check} from '@augment-vir/assert';
+import {extractErrorMessage} from '@augment-vir/common';
 import {classMap, css, defineElement, html, isAsyncError, renderIf, unsafeCSS} from 'element-vir';
 import {
     StatusFailure24Icon,
@@ -7,10 +8,10 @@ import {
     ViraIcon,
     ViraIconSvg,
 } from 'vira';
-import {PullRequest, PullRequestMergeStatus} from '../../../../../data/git/pull-request';
-import {User} from '../../../../../data/git/user';
-import {calculateTextColor} from '../../../../../util/color';
-import {VirUsers} from '../../../common-elements/vir-users.element';
+import {PullRequest, PullRequestMergeStatus} from '../../../../../data/git/pull-request.js';
+import {User} from '../../../../../data/git/user.js';
+import {calculateTextColor} from '../../../../../util/color.js';
+import {VirUsers} from '../../../common-elements/vir-users.element.js';
 
 export const VirPullRequest = defineElement<{
     user: Readonly<User>;
@@ -158,7 +159,7 @@ export const VirPullRequest = defineElement<{
         }
     `,
     renderCallback({inputs}) {
-        const assignees = Object.values(inputs.pullRequest.users.assignees).filter(isTruthy);
+        const assignees = Object.values(inputs.pullRequest.users.assignees).filter(check.isTruthy);
 
         const checksIconKey: keyof typeof checkIcons | undefined =
             inputs.pullRequest.status.checksStatus instanceof Error ||
@@ -349,7 +350,7 @@ function calculateReviewers(
 ): Pick<(typeof VirUsers)['inputsType'], 'users' | 'reviews'> {
     const users: Readonly<User>[] = Object.values(reviewers)
         .map((reviewer) => reviewer?.user)
-        .filter(isTruthy);
+        .filter(check.isTruthy);
 
     return {reviews: reviewers, users};
 }

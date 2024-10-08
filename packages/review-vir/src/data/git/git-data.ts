@@ -1,6 +1,6 @@
 import {classShape, defineShape, or} from 'object-shape-tester';
-import {pullRequestShape} from './pull-request';
-import {userShape} from './user';
+import {pullRequestShape} from './pull-request.js';
+import {userShape} from './user.js';
 
 export const gitDataShape = defineShape(
     {
@@ -9,4 +9,4 @@ export const gitDataShape = defineShape(
     },
     true,
 );
-export type GitData = typeof gitDataShape.runTimeType;
+export type GitData = typeof gitDataShape.runtimeType;

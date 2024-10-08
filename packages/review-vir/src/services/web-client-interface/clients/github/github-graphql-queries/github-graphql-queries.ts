@@ -1,12 +1,13 @@
-import {AtLeastOneEntryArray, isTruthy, mapObjectValues} from '@augment-vir/common';
-import {calculateRelativeDate, getNowInUserTimezone, toSimplePartStrings} from 'date-vir';
+import {assert, check} from '@augment-vir/assert';
+import {mapObjectValues, type AtLeastTuple} from '@augment-vir/common';
+import {calculateRelativeDate, getNowInUserTimezone, toSimpleDatePartString} from 'date-vir';
 import {ShapeDefinition, and, defineShape} from 'object-shape-tester';
 import {RequireExactlyOne} from 'type-fest';
-import {sum} from '../../../../../util/sum';
+import {sum} from '../../../../../util/sum.js';
 import {
     githubPullRequestGraphqlQuery,
     githubPullRequestGraphqlResponseShape,
-} from './github-graphql-pull-request-query';
+} from './github-graphql-pull-request-query.js';
 
 export enum GithubGraphqlSearchQuery {
     OpenPullRequests = 'open-pull-requests',
@@ -33,13 +34,13 @@ const githubGraphqlQuerySearchStringCreators: Readonly<
             'archived:false',
             options.filter?.onlyMyself && 'involves:@me',
             options.filter?.org && `org:${options.filter.org}`,
-        ].filter(isTruthy);
+        ].filter(check.isTruthy);
 
         return queryParts.join(' ');
     },
     [GithubGraphqlSearchQuery.ClosedPullRequests](options) {
         const weekAgo = calculateRelativeDate(getNowInUserTimezone(), {weeks: -1});
-        const weekAgoString = toSimplePartStrings(weekAgo, {includeSeconds: false}).date;
+        const weekAgoString = toSimpleDatePartString(weekAgo);
 
         const queryParts = [
             'is:closed',
@@ -48,7 +49,7 @@ const githubGraphqlQuerySearchStringCreators: Readonly<
             `closed:>=${weekAgoString}`,
             options.filter?.onlyMyself && 'involves:@me',
             options.filter?.org && `org:${options.filter.org}`,
-        ].filter(isTruthy);
+        ].filter(check.isTruthy);
         return queryParts.join(' ');
     },
 };
@@ -91,7 +92,7 @@ export const githubGraphqlResponseShapes = mapObjectValues(
 );
 
 export type GithubGraphqlResponse<QueryType extends GithubGraphqlQueryType> =
-    (typeof githubGraphqlResponseShapes)[QueryType]['runTimeType'];
+    (typeof githubGraphqlResponseShapes)[QueryType]['runtimeType'];
 
 export const paginationInfoGetters: Readonly<{
     [QueryType in GithubGraphqlQueryType]: (
@@ -116,13 +117,13 @@ export const paginationInfoGetters: Readonly<{
 };
 export const paginationCombinators: Readonly<{
     [QueryType in GithubGraphqlQueryType]: (
-        responses: Readonly<
-            AtLeastOneEntryArray<ReadonlyArray<Readonly<GithubGraphqlResponse<QueryType>>>>
-        >,
+        responses: Readonly<AtLeastTuple<Readonly<GithubGraphqlResponse<QueryType>>, 1>>,
     ) => Readonly<GithubGraphqlResponse<QueryType>>;
 }> = {
     [GithubGraphqlQueryType.PullRequest](responses) {
-        const lastResponse = responses.slice(-1)[0]!;
+        const lastResponse = responses[responses.length - 1];
+
+        assert.isDefined(lastResponse);
 
         return {
             authTokenName: lastResponse.authTokenName,

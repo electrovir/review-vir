@@ -1,7 +1,7 @@
 import {classMap, css, defineElement, html, ifDefined, nothing} from 'element-vir';
 import {StatusFailure24Icon, StatusSuccess24Icon, ViraIcon, ViraIconSvg, ViraImage} from 'vira';
-import {PullRequestReview, PullRequestReviewStatus} from '../../../data/git/pull-request';
-import {User} from '../../../data/git/user';
+import {PullRequestReview, PullRequestReviewStatus} from '../../../data/git/pull-request.js';
+import {User} from '../../../data/git/user.js';
 
 export const VirUser = defineElement<{
     user: Readonly<User>;

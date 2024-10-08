@@ -1,8 +1,8 @@
 import {isValidShape} from 'object-shape-tester';
-import {AuthTokensByService, authTokensByServiceShape} from './auth-tokens';
+import {AuthTokensByService, authTokensByServiceShape} from './auth-tokens.js';
 
-declare var VITE_INJECTED_SECRETS_FILE: {authTokens: AuthTokensByService} | undefined;
-declare var VITE_INJECTED_ENCRYPTION_KEY: string | undefined;
+declare let VITE_INJECTED_SECRETS_FILE: {authTokens: AuthTokensByService} | undefined;
+declare let VITE_INJECTED_ENCRYPTION_KEY: string | undefined;
 
 const viteInjectedSecretsFile =
     typeof VITE_INJECTED_SECRETS_FILE === 'undefined' ? undefined : VITE_INJECTED_SECRETS_FILE;
@@ -12,6 +12,6 @@ const viteInjectedEncryptionKey =
 export const globalVars = {
     devAuthTokens: isValidShape(viteInjectedSecretsFile?.authTokens, authTokensByServiceShape)
         ? viteInjectedSecretsFile.authTokens
-        : ({} as typeof authTokensByServiceShape.runTimeType),
+        : ({} as typeof authTokensByServiceShape.runtimeType),
     encryptionKey: viteInjectedEncryptionKey,
 } as const;

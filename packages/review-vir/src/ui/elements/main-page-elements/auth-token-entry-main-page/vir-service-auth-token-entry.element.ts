@@ -10,9 +10,9 @@ import {
     noNativeFormStyles,
     noNativeSpacing,
 } from 'vira';
-import {AuthToken, SupportedServiceName} from '../../../../data/auth-tokens';
-import {VirErrorMessage} from '../../common-elements/vir-error-message.element';
-import {tokenDescriptions} from './token-descriptions';
+import {AuthToken, SupportedServiceName} from '../../../../data/auth-tokens.js';
+import {VirErrorMessage} from '../../common-elements/vir-error-message.element.js';
+import {tokenDescriptions} from './token-descriptions.js';
 
 export type AuthTokenEntryError = {
     serviceName: SupportedServiceName;
@@ -80,6 +80,7 @@ export const VirServiceAuthTokenEntry = defineElement<{
         const authTokenTemplates = inputs.authTokens.map((authToken, authTokenIndex) => {
             const isErrorRelevant =
                 inputs.authTokenEntryError?.authTokenIndex === authTokenIndex &&
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 inputs.authTokenEntryError.serviceName === inputs.serviceName;
 
             const errorTemplate = isErrorRelevant

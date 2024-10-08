@@ -1,13 +1,13 @@
-import {isTruthy} from '@augment-vir/common';
+import {check} from '@augment-vir/assert';
 import {HTMLTemplateResult, css, defineElement, html, nothing} from 'element-vir';
 import {
     ChainedPullRequest,
     organizeChainedPullRequests,
-} from '../../../../../data/git/chained-pull-requests';
-import {OwnedPullRequests} from '../../../../../data/git/pull-request-organization';
-import {User} from '../../../../../data/git/user';
-import {VirUser} from '../../../common-elements/vir-user.element';
-import {VirPullRequest} from './vir-pull-request.element';
+} from '../../../../../data/git/chained-pull-requests.js';
+import {OwnedPullRequests} from '../../../../../data/git/pull-request-organization.js';
+import {User} from '../../../../../data/git/user.js';
+import {VirUser} from '../../../common-elements/vir-user.element.js';
+import {VirPullRequest} from './vir-pull-request.element.js';
 
 export const VirOrgPullRequests = defineElement<{
     user: Readonly<User>;
@@ -54,7 +54,7 @@ export const VirOrgPullRequests = defineElement<{
                     </section>
                 `;
             })
-            .filter(isTruthy);
+            .filter(check.isTruthy);
 
         if (!sectionTemplates.length) {
             return nothing;

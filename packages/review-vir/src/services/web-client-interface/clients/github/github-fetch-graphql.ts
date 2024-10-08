@@ -1,7 +1,8 @@
-import {ensureErrorAndPrependMessage, isLengthAtLeast} from '@augment-vir/common';
+import {check} from '@augment-vir/assert';
+import {ensureErrorAndPrependMessage} from '@augment-vir/common';
 import {assertValidShape} from 'object-shape-tester';
-import {AuthToken} from '../../../../data/auth-tokens';
-import {githubGraphqlErrorShape} from './github-graphql-queries/github-graphql-error';
+import {AuthToken} from '../../../../data/auth-tokens.js';
+import {githubGraphqlErrorShape} from './github-graphql-queries/github-graphql-error.js';
 import {
     GithubGraphqlQueryType,
     GithubGraphqlResponse,
@@ -11,7 +12,7 @@ import {
     githubGraphqlResponseShapes,
     paginationCombinators,
     paginationInfoGetters,
-} from './github-graphql-queries/github-graphql-queries';
+} from './github-graphql-queries/github-graphql-queries.js';
 
 export async function fetchGithubGraphql<QueryType extends GithubGraphqlQueryType>(
     queryType: QueryType,
@@ -64,7 +65,7 @@ export async function fetchGithubGraphql<QueryType extends GithubGraphqlQueryTyp
             }
         } while (cursor);
 
-        if (!isLengthAtLeast(paginatedResponses, 1)) {
+        if (!check.isLengthAtLeast(paginatedResponses, 1)) {
             throw new Error('No data received from GitHub.');
         }
 

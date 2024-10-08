@@ -1,7 +1,7 @@
+import {check} from '@augment-vir/assert';
 import {MaybePromise, ensureError, mergeDeep} from '@augment-vir/common';
 import {
     AnyDuration,
-    DurationUnit,
     calculateRelativeDate,
     convertDuration,
     createFullDateInUserTimezone,
@@ -11,18 +11,17 @@ import {
 import {defineClient} from 'generic-client-interface';
 import localForage from 'localforage-esm';
 import {defineShape, isValidShape} from 'object-shape-tester';
-import {isJsonEqual, isPromise} from 'run-time-assertions';
 import {PartialDeep} from 'type-fest';
-import {AuthToken} from '../../../../../data/auth-tokens';
-import {GitData, gitDataShape} from '../../../../../data/git/git-data';
+import {AuthToken} from '../../../../../data/auth-tokens.js';
+import {GitData, gitDataShape} from '../../../../../data/git/git-data.js';
 import {
     ErrorEvent,
     GitDataChangeEvent,
     GitDataResolveEvent,
     GitUpdateStartEvent,
-} from '../../../git-client/git-client-events';
-import {AutoUpdatingGitClient, GitClient} from '../../../git-client/git-service-client';
-import {fetchGithubData} from './fetch-github-data';
+} from '../../../git-client/git-client-events.js';
+import {AutoUpdatingGitClient, GitClient} from '../../../git-client/git-service-client.js';
+import {fetchGithubData} from './fetch-github-data.js';
 
 export type GithubClientOptions = {
     updateInterval: AnyDuration;
@@ -45,15 +44,15 @@ const cacheDataShape = defineShape(
     },
     true,
 );
-type CacheData = typeof cacheDataShape.runTimeType;
+type CacheData = typeof cacheDataShape.runtimeType;
 
 export class GithubClient extends AutoUpdatingGitClient {
-    public static cacheStore = localForage.createInstance({
+    public static readonly cacheStore = localForage.createInstance({
         description: 'github client cache for review-vir',
         name: 'review-vir-github-cache',
         storeName: 'review-vir-github-cache',
     });
-    public static cacheKey = 'value';
+    public static readonly cacheKey = 'value';
 
     public value!: MaybePromise<GitData>;
     public lastResolvedValue: GitData | undefined = undefined;
@@ -68,6 +67,7 @@ export class GithubClient extends AutoUpdatingGitClient {
             this.overrideOptions(optionsOverride);
         }
 
+        // eslint-disable-next-line sonarjs/no-async-constructor
         this.setPromiseValue(this.loadCachedValue());
         this.scheduleFutureUpdate();
     }
@@ -91,7 +91,7 @@ export class GithubClient extends AutoUpdatingGitClient {
                     ),
                 })
             ) {
-                this.setUpdatedValue(true);
+                void this.setUpdatedValue(true);
             } else {
                 setTimeout(() => this.setUpdatedValue(true));
             }
@@ -110,21 +110,18 @@ export class GithubClient extends AutoUpdatingGitClient {
                 this.dispatch(new GitDataResolveEvent({detail: newResolvedValue}));
                 this.value = newResolvedValue;
 
-                if (!isJsonEqual(this.lastResolvedValue, newResolvedValue)) {
+                if (!check.jsonEquals(this.lastResolvedValue, newResolvedValue)) {
                     this.dispatch(new GitDataChangeEvent({detail: newResolvedValue}));
                     this.lastResolvedValue = newResolvedValue;
-                    this.saveCache(newResolvedValue);
+                    void this.saveCache(newResolvedValue);
                 }
             })
-            .catch((reason) => {
+            .catch((reason: unknown) => {
                 this.dispatch(new ErrorEvent({detail: ensureError(reason)}));
             });
     }
 
     public overrideOptions(optionsOverride: PartialDeep<GithubClientOptions>) {
-        if (!optionsOverride) {
-            return;
-        }
         this.options = mergeDeep<GithubClientOptions>(this.options, optionsOverride);
     }
 
@@ -133,14 +130,17 @@ export class GithubClient extends AutoUpdatingGitClient {
     }
 
     private scheduleFutureUpdate() {
-        globalThis.setTimeout(() => {
-            this.setUpdatedValue(false);
-        }, convertDuration(this.options.updateInterval, DurationUnit.Milliseconds).milliseconds);
+        globalThis.setTimeout(
+            async () => {
+                await this.setUpdatedValue(false);
+            },
+            convertDuration(this.options.updateInterval, {milliseconds: true}).milliseconds,
+        );
     }
 
     private async setUpdatedValue(forceUpdate: boolean) {
         this.scheduleFutureUpdate();
-        if (!forceUpdate && isPromise(this.value)) {
+        if (!forceUpdate && check.isPromise(this.value)) {
             return this.value;
         }
 

@@ -9,4 +9,4 @@ export const userShape = defineShape(
     true,
 );
 
-export type User = typeof userShape.runTimeType;
+export type User = typeof userShape.runtimeType;

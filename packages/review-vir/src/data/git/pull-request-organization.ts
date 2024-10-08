@@ -1,6 +1,6 @@
 import {getOrSet} from '@augment-vir/common';
-import {PullRequest, PullRequestMergeStatus} from './pull-request';
-import {User} from './user';
+import {PullRequest, PullRequestMergeStatus} from './pull-request.js';
+import {User} from './user.js';
 
 export type PullRequestsByStatus = {
     reviewer: Readonly<PullRequest>[];

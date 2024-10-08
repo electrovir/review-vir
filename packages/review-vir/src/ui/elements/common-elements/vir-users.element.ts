@@ -1,7 +1,7 @@
 import {css, defineElement, html} from 'element-vir';
-import {PullRequestReview} from '../../../data/git/pull-request';
-import {User} from '../../../data/git/user';
-import {VirUser} from './vir-user.element';
+import {PullRequestReview} from '../../../data/git/pull-request.js';
+import {User} from '../../../data/git/user.js';
+import {VirUser} from './vir-user.element.js';
 
 export const VirUsers = defineElement<{
     users: ReadonlyArray<Readonly<User>>;

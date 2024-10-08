@@ -1,11 +1,11 @@
+import {assert} from '@augment-vir/assert';
 import {ArrayElement} from '@augment-vir/common';
-import {assertTypeOf} from 'run-time-assertions';
 import {
     GithubGraphqlCheckRunConclusion,
     failedCheckRunConclusions,
     pendingCheckRunConclusions,
     successCheckRunConclusions,
-} from './github-graphql-pull-request-query';
+} from './github-graphql-pull-request-query.js';
 
 describe('GithubGraphqlCheckRunConclusion', () => {
     it('is covered by all state arrays', () => {
@@ -16,7 +16,7 @@ describe('GithubGraphqlCheckRunConclusion', () => {
         type AllTypesString = `${AllTypes}`;
         type AllEnumValuesString = `${GithubGraphqlCheckRunConclusion}`;
 
-        assertTypeOf<AllTypesString>().toEqualTypeOf<AllEnumValuesString>();
+        assert.tsType<AllTypesString>().equals<AllEnumValuesString>();
 
         // used for making it clear what is missing
         const testAssignment: Record<AllEnumValuesString, unknown> = {} as any as Record<

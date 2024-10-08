@@ -1,8 +1,8 @@
-import {getEnumTypedValues} from '@augment-vir/common';
+import {getEnumValues} from '@augment-vir/common';
 import {defineElement, html, nothing} from 'element-vir';
-import {AuthTokensByService, SupportedServiceName} from '../../../../data/auth-tokens';
-import {WebClientInterface} from '../../../../services/web-client-interface/web-client-interface';
-import {serviceElements} from './service-pull-requests.ts/service-elements';
+import {AuthTokensByService, SupportedServiceName} from '../../../../data/auth-tokens.js';
+import {WebClientInterface} from '../../../../services/web-client-interface/web-client-interface.js';
+import {serviceElements} from './service-pull-requests/service-elements.js';
 
 export const VirPullRequestsMainPage = defineElement<
     Readonly<{
@@ -12,7 +12,7 @@ export const VirPullRequestsMainPage = defineElement<
 >()({
     tagName: 'vir-pull-requests-main-page',
     renderCallback({inputs}) {
-        const serviceTemplates = getEnumTypedValues(SupportedServiceName).map((serviceName) => {
+        const serviceTemplates = getEnumValues(SupportedServiceName).map((serviceName) => {
             const authTokens = inputs.serviceAuthTokens[serviceName];
 
             if (!authTokens?.length) {

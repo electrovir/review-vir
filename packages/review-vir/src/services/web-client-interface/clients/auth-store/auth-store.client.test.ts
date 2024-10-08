@@ -1,15 +1,15 @@
+import {assert} from '@augment-vir/assert';
 import {getObjectTypedKeys, mapObjectValues, randomString} from '@augment-vir/common';
-import {assert} from '@open-wc/testing';
 import {
     AuthToken,
     AuthTokensByService,
     authTokensByServiceShape,
-} from '../../../../data/auth-tokens';
+} from '../../../../data/auth-tokens.js';
 import {
     loadServiceAuthTokens,
     reviewVirAuthTokensStore,
     saveServiceAuthTokens,
-} from './auth-store.client';
+} from './auth-store.client.js';
 
 function runAuthTokenTest(testCallback: () => Promise<void>) {
     return async () => {
@@ -27,7 +27,7 @@ describe(loadServiceAuthTokens.name, () => {
         runAuthTokenTest(async () => {
             const tokens = await loadServiceAuthTokens({secretEncryptionKey: testEncryptionKey});
 
-            assert.lengthOf(Object.keys(tokens), 0);
+            assert.isLengthExactly(Object.keys(tokens), 0);
         }),
     );
     it(
@@ -56,7 +56,7 @@ describe(loadServiceAuthTokens.name, () => {
 
             getObjectTypedKeys(loadedValues).forEach((serviceName) => {
                 const loadedToken = loadedValues[serviceName];
-                assert.strictEqual(loadedToken, testTokensByService[serviceName]);
+                assert.strictEquals(loadedToken, testTokensByService[serviceName]);
             });
         }),
     );

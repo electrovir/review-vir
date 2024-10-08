@@ -1,6 +1,6 @@
 import {TypedListenTarget} from 'typed-event-target';
-import {AuthToken} from '../../../data/auth-tokens';
-import {GitClientEvents} from './git-client-events';
+import {AuthToken} from '../../../data/auth-tokens.js';
+import {GitClientEvents} from './git-client-events.js';
 
 export type GitClient = {
     init(authTokens: ReadonlyArray<Readonly<AuthToken>>): AutoUpdatingGitClient;

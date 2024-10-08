@@ -1,13 +1,13 @@
 import {css, defineElement, html, nothing} from 'element-vir';
 import {LoaderAnimated24Icon, ViraIcon} from 'vira';
-import {AuthToken} from '../../../../../data/auth-tokens';
-import {PullRequest} from '../../../../../data/git/pull-request';
-import {organizePullRequestsByOwner} from '../../../../../data/git/pull-request-organization';
-import {User} from '../../../../../data/git/user';
-import {GitDataChangeEvent} from '../../../../../services/web-client-interface/git-client/git-client-events';
-import {AutoUpdatingGitClient} from '../../../../../services/web-client-interface/git-client/git-service-client';
-import {WebClientInterface} from '../../../../../services/web-client-interface/web-client-interface';
-import {VirOrgPullRequests} from '../pull-request-presentation/vir-org-pull-requests.element';
+import {AuthToken} from '../../../../../data/auth-tokens.js';
+import {organizePullRequestsByOwner} from '../../../../../data/git/pull-request-organization.js';
+import {PullRequest} from '../../../../../data/git/pull-request.js';
+import {User} from '../../../../../data/git/user.js';
+import {GitDataChangeEvent} from '../../../../../services/web-client-interface/git-client/git-client-events.js';
+import {AutoUpdatingGitClient} from '../../../../../services/web-client-interface/git-client/git-service-client.js';
+import {WebClientInterface} from '../../../../../services/web-client-interface/web-client-interface.js';
+import {VirOrgPullRequests} from '../pull-request-presentation/vir-org-pull-requests.element.js';
 
 export const VirGithubPullRequests = defineElement<{
     authTokens: ReadonlyArray<Readonly<AuthToken>>;

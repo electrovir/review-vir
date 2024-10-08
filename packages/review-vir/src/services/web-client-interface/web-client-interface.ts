@@ -1,11 +1,8 @@
 import {awaitAllClients, defineClientInterface} from 'generic-client-interface';
 
 const webClients = defineClientInterface({
-    clientImports: {
-        github: () => import('./clients/github/github-client/github.client'),
-        authStore: () => import('./clients/auth-store/auth-store.client'),
-    },
-    isTestEnv: false,
+    github: () => import('./clients/github/github-client/github.client'),
+    authStore: () => import('./clients/auth-store/auth-store.client'),
 });
 
 export async function loadWebClientInterface() {

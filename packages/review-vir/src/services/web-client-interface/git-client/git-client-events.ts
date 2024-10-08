@@ -1,5 +1,5 @@
 import {defineTypedCustomEvent} from 'typed-event-target';
-import {GitData} from '../../../data/git/git-data';
+import {GitData} from '../../../data/git/git-data.js';
 
 export class GitDataResolveEvent extends defineTypedCustomEvent<GitData>()(
     'pull-requests-resolved',

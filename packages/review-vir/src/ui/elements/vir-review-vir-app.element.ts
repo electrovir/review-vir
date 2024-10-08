@@ -1,3 +1,4 @@
+import {check} from '@augment-vir/assert';
 import {extractErrorMessage} from '@augment-vir/common';
 import {
     asyncProp,
@@ -10,24 +11,23 @@ import {
     listen,
     nothing,
 } from 'element-vir';
-import {isJsonEqual} from 'run-time-assertions';
 import {LoaderAnimated24Icon, ViraIcon} from 'vira';
-import {globalVars} from '../../data/global-vars';
+import {globalVars} from '../../data/global-vars.js';
 import {
     ReviewVirFullRoute,
     ReviewVirMainPath,
     createReviewVirRouter,
     defaultReviewVirFullRoute,
-} from '../../data/routing/vir-route';
+} from '../../data/routing/vir-route.js';
 import {
     WebClientInterface,
     loadWebClientInterface,
-} from '../../services/web-client-interface/web-client-interface';
-import {ChangeRouteEvent} from '../events/change-route.event';
-import {VirAppTabs} from './app-tabs/vir-app-tabs.element';
-import {VirErrorMessage} from './common-elements/vir-error-message.element';
-import {VirAuthTokenEntryMainPage} from './main-page-elements/auth-token-entry-main-page/vir-auth-token-entry-main-page.element';
-import {VirPullRequestsMainPage} from './main-page-elements/pull-requests-main-page/vir-pull-requests-main-page.element';
+} from '../../services/web-client-interface/web-client-interface.js';
+import {ChangeRouteEvent} from '../events/change-route.event.js';
+import {VirAppTabs} from './app-tabs/vir-app-tabs.element.js';
+import {VirErrorMessage} from './common-elements/vir-error-message.element.js';
+import {VirAuthTokenEntryMainPage} from './main-page-elements/auth-token-entry-main-page/vir-auth-token-entry-main-page.element.js';
+import {VirPullRequestsMainPage} from './main-page-elements/pull-requests-main-page/vir-pull-requests-main-page.element.js';
 
 export const VirReviewVirApp = defineElementNoInputs({
     tagName: 'vir-review-vir-app',
@@ -115,7 +115,7 @@ export const VirReviewVirApp = defineElementNoInputs({
                   }
                 : state.currentRoute || defaultReviewVirFullRoute;
 
-        if (!isJsonEqual(currentRoute, state.currentRoute)) {
+        if (!state.currentRoute || !check.jsonEquals(currentRoute, state.currentRoute)) {
             state.router.setRoute(currentRoute);
         }
 
@@ -128,7 +128,7 @@ export const VirReviewVirApp = defineElementNoInputs({
                           ${listen(
                               VirAuthTokenEntryMainPage.events.authTokensByServiceChange,
                               async (event) => {
-                                  webClientInterface.authStore.saveServiceAuthTokens({
+                                  await webClientInterface.authStore.saveServiceAuthTokens({
                                       secretEncryptionKey: globalVars.encryptionKey,
                                       authTokensByService: event.detail,
                                   });

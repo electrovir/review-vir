@@ -5,7 +5,7 @@ import {
     ReviewVirMainPath,
     ReviewVirRouter,
     ValidReviewVirPaths,
-} from '../../../data/routing/vir-route';
+} from '../../../data/routing/vir-route.js';
 
 export const VirAppTabs = defineElement<{
     router: Readonly<ReviewVirRouter>;

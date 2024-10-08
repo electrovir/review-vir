@@ -1,5 +1,5 @@
-import {itCases} from '@augment-vir/browser-testing';
-import {parsePrimaryReviewers} from './parse-primary-reviewers';
+import {describe, itCases} from '@augment-vir/test';
+import {parsePrimaryReviewers} from './parse-primary-reviewers.js';
 
 describe(parsePrimaryReviewers.name, () => {
     itCases(parsePrimaryReviewers, [

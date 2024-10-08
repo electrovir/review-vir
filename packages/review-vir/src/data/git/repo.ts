@@ -1,5 +1,5 @@
 import {defineShape} from 'object-shape-tester';
-import {userShape} from './user';
+import {userShape} from './user.js';
 
 export const gitRepoShape = defineShape(
     {
@@ -12,4 +12,4 @@ export const gitRepoShape = defineShape(
     true,
 );
 
-export type GitRepo = typeof gitRepoShape.runTimeType;
+export type GitRepo = typeof gitRepoShape.runtimeType;

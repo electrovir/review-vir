@@ -9,3 +9,6 @@
 -   icon for comments (speech bubble)
 -   icon for commits (branch icon)
 -   split out code into a common package that's published to npm that pull-request-vir can use
+-   add a full blown PR review page
+    -   include a custom diff with better code move detection
+    -   allow each line change to be marked as "viewed"

@@ -12,7 +12,7 @@ export const authTokenShape = defineShape(
     },
     true,
 );
-export type AuthToken = typeof authTokenShape.runTimeType;
+export type AuthToken = typeof authTokenShape.runtimeType;
 
 export const authTokensByServiceShape = defineShape(
     indexedKeys({
@@ -22,7 +22,7 @@ export const authTokensByServiceShape = defineShape(
     }),
     true,
 );
-export type AuthTokensByService = typeof authTokensByServiceShape.runTimeType;
+export type AuthTokensByService = typeof authTokensByServiceShape.runtimeType;
 
 export class AuthTokenValidationError extends Error {
     public override name = 'AuthTokenValidationError';

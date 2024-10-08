@@ -1,5 +1,5 @@
 import {classShape, defineShape, or} from 'object-shape-tester';
-import {gitRepoShape} from './repo';
+import {gitRepoShape} from './repo.js';
 
 export const gitBranchShape = defineShape(
     {
@@ -10,4 +10,4 @@ export const gitBranchShape = defineShape(
     true,
 );
 
-export type GitBranch = typeof gitBranchShape.runTimeType;
+export type GitBranch = typeof gitBranchShape.runtimeType;

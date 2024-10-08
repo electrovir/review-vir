@@ -14,13 +14,13 @@ export function parsePrimaryReviewers({bodyText}: {bodyText: string}): string[] 
     const [
         ,
         match,
-    ] = safeMatch(bodyText, /primary reviewers?\W+((?:@[^@\s]+(?:[\s\n]|$))+)/i);
+    ] = safeMatch(bodyText, /primary reviewers?\W+((?:@[^@\s]+(?:\s|$))+)/i);
 
     if (!match) {
         return [];
     }
 
-    const userTags = Array.from(match.matchAll(/@[\w\-\d]+/g));
+    const userTags = Array.from(match.matchAll(/@[\w-]+/g));
 
     return userTags.map((userTag) => removePrefix({value: userTag[0], prefix: '@'}));
 }

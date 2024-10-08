@@ -1,6 +1,6 @@
 import {getOrSet} from '@augment-vir/common';
 import {FullDate, isDateAfter, toTimestamp} from 'date-vir';
-import {PullRequest, PullRequestMergeStatus} from './pull-request';
+import {PullRequest, PullRequestMergeStatus} from './pull-request.js';
 
 export type ChainedPullRequest = {
     needsChainedReviews: boolean;

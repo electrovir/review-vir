@@ -1,4 +1,4 @@
-import {isRunTimeType} from 'run-time-assertions';
+import {check} from '@augment-vir/assert';
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -58,7 +58,7 @@ export async function decrypt({
 }
 
 function ensureUint8Array(input: string | Uint8Array): Uint8Array {
-    if (isRunTimeType(input, 'string')) {
+    if (check.isString(input)) {
         return textEncoder.encode(input);
     } else {
         return input;
