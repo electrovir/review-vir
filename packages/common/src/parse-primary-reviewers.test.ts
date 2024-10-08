@@ -36,6 +36,17 @@ describe(parsePrimaryReviewers.name, () => {
             ],
         },
         {
+            it: 'handles multiple primaries separated by commas and space',
+            input: {
+                bodyText:
+                    'https://my-ticket-url.com/ticket-number\nPrimary reviewer: @my-name1 , @my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
+            },
+            expect: [
+                'my-name1',
+                'my-name2',
+            ],
+        },
+        {
             it: 'ignores a later tag',
             input: {
                 bodyText: '**Primary Reviewer**: @person Changes - ask @another for help',
