@@ -23,9 +23,9 @@ export function parsePrimaryReviewers({bodyText}: {bodyText: string}): string[] 
     const [
         ,
         restrictedMatch,
-    ] = match.match(/((?:@[\w-]+[^\w@]*)+)/);
+    ] = safeMatch(match, /((?:@[\w-]+[^\w@]*)+)/);
 
-    const userTags = Array.from(restrictedMatch.matchAll(/@[\w-]+/g));
+    const userTags = Array.from(restrictedMatch?.matchAll(/@[\w-]+/g) || []);
 
     return userTags.map((userTag) => removePrefix({value: userTag[0], prefix: '@'}));
 }

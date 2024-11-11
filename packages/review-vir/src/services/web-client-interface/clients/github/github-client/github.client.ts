@@ -54,7 +54,7 @@ export class GithubClient extends AutoUpdatingGitClient {
     });
     public static readonly cacheKey = 'value';
 
-    public value!: MaybePromise<GitData>;
+    public value!: MaybePromise<GitData | undefined>;
     public lastResolvedValue: GitData | undefined = undefined;
     public options = defaultGithubClientOptions;
 
@@ -79,7 +79,7 @@ export class GithubClient extends AutoUpdatingGitClient {
         });
     }
 
-    private async loadCachedValue(): Promise<GitData> {
+    private async loadCachedValue(): Promise<GitData | undefined> {
         const cachedData = await GithubClient.cacheStore.getItem<CacheData>(GithubClient.cacheKey);
         if (isValidShape(cachedData, cacheDataShape)) {
             if (
@@ -102,11 +102,15 @@ export class GithubClient extends AutoUpdatingGitClient {
         return this.fetchData();
     }
 
-    private setPromiseValue(newPromise: Promise<GitData>) {
+    private setPromiseValue(newPromise: Promise<GitData | undefined>) {
         this.dispatch(new GitUpdateStartEvent({detail: newPromise}));
         this.value = newPromise;
         newPromise
             .then((newResolvedValue) => {
+                if (!newResolvedValue) {
+                    return;
+                }
+
                 this.dispatch(new GitDataResolveEvent({detail: newResolvedValue}));
                 this.value = newResolvedValue;
 

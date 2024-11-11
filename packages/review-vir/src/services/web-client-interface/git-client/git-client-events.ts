@@ -7,7 +7,7 @@ export class GitDataResolveEvent extends defineTypedCustomEvent<GitData>()(
 
 export class ErrorEvent extends defineTypedCustomEvent<Error>()('custom-error') {}
 
-export class GitUpdateStartEvent extends defineTypedCustomEvent<Promise<GitData>>()(
+export class GitUpdateStartEvent extends defineTypedCustomEvent<Promise<GitData | undefined>>()(
     'pull-requests-update-started',
 ) {}
 

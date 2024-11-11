@@ -17,9 +17,9 @@ let costTooHigh = false;
 
 export async function fetchGithubData(
     authTokens: ReadonlyArray<Readonly<AuthToken>>,
-): Promise<GitData> {
+): Promise<GitData | undefined> {
     if (costTooHigh) {
-        throw new Error('Refusing to fetch because GraphQL query cost is too high.');
+        return undefined;
     }
     const authTokenSettledResponses = await Promise.allSettled(
         authTokens.flatMap((authToken) => {
@@ -52,8 +52,12 @@ export async function fetchGithubData(
                         return [value];
                     } else if (value.data.rateLimit.cost > 1) {
                         costTooHigh = true;
-                        throw new Error(`GraphQL query cost is too high.`);
-                    } else if (!user) {
+                        console.warn(
+                            `GraphQL query cost is too high (${value.data.rateLimit.cost}). Live updates will not happen.`,
+                        );
+                    }
+
+                    if (!user) {
                         user = parseGithubUser(value.data.viewer);
                     }
                     return value.data.search.nodes.map((rawPullRequest) => {
