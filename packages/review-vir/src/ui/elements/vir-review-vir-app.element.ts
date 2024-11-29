@@ -12,7 +12,7 @@ import {
     nothing,
 } from 'element-vir';
 import {LoaderAnimated24Icon, ViraIcon} from 'vira';
-import {globalVars} from '../../data/global-vars.js';
+import {gitAdapterGlobalVars} from '../../../../adapter-core/src/auth-store/global-vars.js';
 import {
     ReviewVirFullRoute,
     ReviewVirMainPath,
@@ -92,7 +92,7 @@ export const VirReviewVirApp = defineElementNoInputs({
         }
 
         state.serviceAuthTokens.update({
-            secretEncryptionKey: globalVars.encryptionKey,
+            secretEncryptionKey: gitAdapterGlobalVars.encryptionKey,
             webClientInterface,
         });
         const serviceAuthTokens = state.serviceAuthTokens.value;
@@ -129,7 +129,7 @@ export const VirReviewVirApp = defineElementNoInputs({
                               VirAuthTokenEntryMainPage.events.authTokensByServiceChange,
                               async (event) => {
                                   await webClientInterface.authStore.saveServiceAuthTokens({
-                                      secretEncryptionKey: globalVars.encryptionKey,
+                                      secretEncryptionKey: gitAdapterGlobalVars.encryptionKey,
                                       authTokensByService: event.detail,
                                   });
 

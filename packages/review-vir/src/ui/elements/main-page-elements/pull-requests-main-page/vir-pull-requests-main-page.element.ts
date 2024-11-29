@@ -1,6 +1,9 @@
 import {getEnumValues} from '@augment-vir/common';
 import {defineElement, html, nothing} from 'element-vir';
-import {AuthTokensByService, SupportedServiceName} from '../../../../data/auth-tokens.js';
+import {
+    AuthTokensByService,
+    SupportedServiceName,
+} from '../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {WebClientInterface} from '../../../../services/web-client-interface/web-client-interface.js';
 import {serviceElements} from './service-pull-requests/service-elements.js';
 

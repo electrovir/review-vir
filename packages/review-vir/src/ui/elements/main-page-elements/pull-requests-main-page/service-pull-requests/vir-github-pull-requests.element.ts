@@ -1,6 +1,6 @@
 import {css, defineElement, html, nothing} from 'element-vir';
 import {LoaderAnimated24Icon, ViraIcon} from 'vira';
-import {AuthToken} from '../../../../../data/auth-tokens.js';
+import {AuthToken} from '../../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {organizePullRequestsByOwner} from '../../../../../data/git/pull-request-organization.js';
 import {PullRequest} from '../../../../../data/git/pull-request.js';
 import {User} from '../../../../../data/git/user.js';

@@ -2,7 +2,7 @@ import {check} from '@augment-vir/assert';
 import {arrayToObject, typedObjectFromEntries} from '@augment-vir/common';
 import {parsePrimaryReviewers} from '@review-vir/common';
 import {createFullDateInUserTimezone} from 'date-vir';
-import {SupportedServiceName} from '../../../../../data/auth-tokens.js';
+import {SupportedServiceName} from '../../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {
     PullRequest,
     PullRequestChecks,

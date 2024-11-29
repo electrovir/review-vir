@@ -1,10 +1,10 @@
 import {classShape, defineShape, or} from 'object-shape-tester';
+import {gitUserShape} from './git-user.js';
 import {pullRequestShape} from './pull-request.js';
-import {userShape} from './user.js';
 
 export const gitDataShape = defineShape(
     {
-        user: userShape,
+        user: gitUserShape,
         pullRequests: [or(pullRequestShape, classShape(Error))],
     },
     true,

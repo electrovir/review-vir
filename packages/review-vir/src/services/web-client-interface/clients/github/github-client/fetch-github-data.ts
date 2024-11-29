@@ -2,7 +2,7 @@ import {assert} from '@augment-vir/assert';
 import {ensureError, randomString, typedObjectFromEntries} from '@augment-vir/common';
 import {isDateAfter} from 'date-vir';
 import {isAsyncError} from 'element-vir';
-import {AuthToken} from '../../../../../data/auth-tokens.js';
+import {AuthToken} from '../../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {GitData} from '../../../../../data/git/git-data.js';
 import {PullRequest} from '../../../../../data/git/pull-request.js';
 import {User} from '../../../../../data/git/user.js';

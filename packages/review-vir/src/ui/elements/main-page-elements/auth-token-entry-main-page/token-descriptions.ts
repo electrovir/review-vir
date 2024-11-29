@@ -1,5 +1,5 @@
 import {HTMLTemplateResult, html} from 'element-vir';
-import {SupportedServiceName} from '../../../../data/auth-tokens.js';
+import {SupportedServiceName} from '../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 
 export type Permission = {label: string; value: string};
 

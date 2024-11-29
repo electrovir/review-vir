@@ -1,15 +1,7 @@
 import {fullDateShape} from 'date-vir';
-import {
-    classShape,
-    defineShape,
-    enumShape,
-    indexedKeys,
-    or,
-    unknownShape,
-} from 'object-shape-tester';
-import {SupportedServiceName} from '../auth-tokens.js';
+import {defineShape, enumShape, indexedKeys, or, unknownShape} from 'object-shape-tester';
 import {gitBranchShape} from './git-branch.js';
-import {userShape} from './user.js';
+import {gitUserShape} from './git-user.js';
 
 export enum PullRequestMergeStatus {
     Draft = 'draft',
@@ -37,8 +29,9 @@ export type PullRequestChecks = typeof pullRequestChecksShape.runtimeType;
 
 export const pullRequestReviewShape = defineShape(
     {
-        user: userShape,
+        user: gitUserShape,
         isPrimaryReviewer: false,
+        isCodeOwner: false,
         reviewStatus: enumShape(PullRequestReviewStatus),
     },
     true,
@@ -51,12 +44,10 @@ export const pullRequestShape = defineShape({
         prId: '',
         prNumber: '',
         title: '',
-        owner: userShape,
+        owner: gitUserShape,
+        gitServiceName: '',
     },
-    auth: {
-        client: enumShape(SupportedServiceName),
-        tokenName: '',
-    },
+    authTokenName: '',
     branches: {
         /** The branch that the PR is coming from. */
         headBranch: gitBranchShape,
@@ -69,23 +60,26 @@ export const pullRequestShape = defineShape({
         closed: or(undefined, fullDateShape),
     },
     status: {
-        checksStatus: or(pullRequestChecksShape, classShape(Error)),
+        checksStatus: or(pullRequestChecksShape, undefined),
         comments: {
             resolved: 0,
             total: 0,
         },
         commitCount: 0,
         mergeStatus: enumShape(PullRequestMergeStatus),
-        mergedBy: or(undefined, userShape),
-        needsReviewFromCurrentUser: false,
-        userIsPrimaryReviewer: false,
-        labels: [
+        mergedBy: or(undefined, gitUserShape),
+        pullRequestLabels: [
             {
                 name: '',
                 color: '',
             },
         ],
         hasMergeConflicts: false,
+    },
+    currentUser: {
+        isPrimaryReviewer: false,
+        isCodeOwner: false,
+        hasReviewed: false,
     },
     changes: {
         additions: 0,
@@ -100,12 +94,14 @@ export const pullRequestShape = defineShape({
         }),
         assignees: indexedKeys({
             keys: '',
-            values: userShape,
+            values: gitUserShape,
             required: false,
         }),
     },
-    cost: unknownShape(),
-    raw: unknownShape(),
+    query: {
+        rawResults: unknownShape(),
+        exceedsCostThreshold: false,
+    },
 });
 
 export type PullRequest = typeof pullRequestShape.runtimeType;

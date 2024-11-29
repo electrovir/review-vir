@@ -6,6 +6,8 @@ export const ncuConfig: RunOptions = {
     // exclude these
     reject: [
         ...baseNcuConfig.reject,
+        // newest version isn't supported by typedoc yet
+        'typescript',
     ],
     // include only these
     filter: [],

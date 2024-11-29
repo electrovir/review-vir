@@ -5,10 +5,13 @@
 -   show loading indicator
 -   document icon for files changed
 -   link checks icon to checks tab
--   fix icons exploding on zoom-in https://stackoverflow.com/questions/46206293/svg-issue-with-safari-when-zooming-in
+-   fix icons exploding on zoom-in
+    -   https://stackoverflow.com/questions/46206293/svg-issue-with-safari-when-zooming-in
+    -   https://stackoverflow.com/questions/11768364
 -   icon for comments (speech bubble)
--   icon for commits (branch icon)
+-   icon for commits (circle with line through it, like a commit on a branch line, icon)
 -   split out code into a common package that's published to npm that pull-request-vir can use
 -   add a full blown PR review page
     -   include a custom diff with better code move detection
     -   allow each line change to be marked as "viewed"
+-   sort by code owner

@@ -1,5 +1,8 @@
 import {DeclarativeElementDefinition} from 'element-vir';
-import {AuthToken, SupportedServiceName} from '../../../../../data/auth-tokens.js';
+import {
+    AuthToken,
+    SupportedServiceName,
+} from '../../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {WebClientInterface} from '../../../../../services/web-client-interface/web-client-interface.js';
 import {VirGithubPullRequests} from './vir-github-pull-requests.element.js';
 

@@ -1,10 +1,10 @@
 import {defineShape} from 'object-shape-tester';
-import {userShape} from './user.js';
+import {gitUserShape} from './git-user.js';
 
 export const gitRepoShape = defineShape(
     {
         repoName: '',
-        repoOwner: userShape,
+        repoOwner: gitUserShape,
         htmlUrl: '',
         isPrivate: false,
         isArchived: false,

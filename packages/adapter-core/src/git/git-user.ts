@@ -1,6 +1,6 @@
 import {defineShape} from 'object-shape-tester';
 
-export const userShape = defineShape(
+export const gitUserShape = defineShape(
     {
         username: '',
         profileUrl: '',
@@ -9,4 +9,4 @@ export const userShape = defineShape(
     true,
 );
 
-export type User = typeof userShape.runtimeType;
+export type GitUser = typeof gitUserShape.runtimeType;

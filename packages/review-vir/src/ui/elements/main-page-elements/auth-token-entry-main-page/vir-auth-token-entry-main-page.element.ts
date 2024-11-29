@@ -6,8 +6,8 @@ import {
     AuthTokenValidationError,
     AuthTokensByService,
     SupportedServiceName,
-    assertValidAuthTokensByService,
-} from '../../../../data/auth-tokens.js';
+    assertValidAuthTokens,
+} from '../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {defaultReviewVirFullRoute} from '../../../../data/routing/vir-route.js';
 import {ChangeRouteEvent} from '../../../events/change-route.event.js';
 import {
@@ -65,7 +65,6 @@ export const VirAuthTokenEntryMainPage = defineElement<{
 
                 const authTokenEntryError =
                     check.isObject(state.errorMessage) &&
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     state.errorMessage.serviceName === serviceName
                         ? state.errorMessage
                         : undefined;
@@ -112,7 +111,7 @@ export const VirAuthTokenEntryMainPage = defineElement<{
                 })}
                     ${listen('click', () => {
                         try {
-                            assertValidAuthTokensByService(state.currentAuthTokenEntry);
+                            assertValidAuthTokens(state.currentAuthTokenEntry);
                         } catch (error) {
                             if (error instanceof AuthTokenValidationError) {
                                 updateState({

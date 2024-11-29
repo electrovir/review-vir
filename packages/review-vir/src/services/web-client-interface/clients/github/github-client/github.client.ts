@@ -12,7 +12,7 @@ import {defineClient} from 'generic-client-interface';
 import localForage from 'localforage-esm';
 import {defineShape, isValidShape} from 'object-shape-tester';
 import {PartialDeep} from 'type-fest';
-import {AuthToken} from '../../../../../data/auth-tokens.js';
+import {AuthToken} from '../../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {GitData, gitDataShape} from '../../../../../data/git/git-data.js';
 import {
     ErrorEvent,

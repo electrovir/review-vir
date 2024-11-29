@@ -1,7 +1,7 @@
 import {check} from '@augment-vir/assert';
 import {ensureErrorAndPrependMessage} from '@augment-vir/common';
 import {assertValidShape} from 'object-shape-tester';
-import {AuthToken} from '../../../../data/auth-tokens.js';
+import {AuthToken} from '../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {githubGraphqlErrorShape} from './github-graphql-queries/github-graphql-error.js';
 import {
     GithubGraphqlQueryType,
