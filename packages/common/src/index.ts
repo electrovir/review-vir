@@ -1,1 +1,1 @@
-export * from './parse-primary-reviewers.js';
+export * from './parse-description-users.js';

@@ -1,21 +1,28 @@
 import {describe, itCases} from '@augment-vir/test';
-import {parsePrimaryReviewers} from './parse-primary-reviewers.js';
+import {parseDescriptionUsers} from './parse-description-users.js';
 
-describe(parsePrimaryReviewers.name, () => {
-    itCases(parsePrimaryReviewers, [
+describe(parseDescriptionUsers.name, () => {
+    itCases(parseDescriptionUsers, [
         {
             it: 'handles "reviewer"',
-            input: {bodyText: 'primary reviewer @my-name'},
+            input: {
+                triggerText: 'primary reviewer',
+                bodyText: 'primary reviewer @my-name',
+            },
             expect: ['my-name'],
         },
         {
             it: 'handles "reviewers"',
-            input: {bodyText: 'primary reviewers @my-name'},
+            input: {
+                triggerText: 'primary reviewer',
+                bodyText: 'primary reviewers @my-name',
+            },
             expect: ['my-name'],
         },
         {
             it: 'handles multiple primaries separated by new lines',
             input: {
+                triggerText: 'primary reviewer',
                 bodyText:
                     'https://my-ticket-url.com/ticket-number\nPrimary reviewer:\n@my-name1\n@my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
             },
@@ -25,8 +32,21 @@ describe(parsePrimaryReviewers.name, () => {
             ],
         },
         {
+            it: 'works with other trigger texts',
+            input: {
+                triggerText: 'code owner',
+                bodyText:
+                    'https://my-ticket-url.com/ticket-number\ncode owners:\n@my-name1\n@my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
+            },
+            expect: [
+                'my-name1',
+                'my-name2',
+            ],
+        },
+        {
             it: 'handles multiple primaries separated by commas',
             input: {
+                triggerText: 'primary reviewer',
                 bodyText:
                     'https://my-ticket-url.com/ticket-number\nPrimary reviewer: @my-name1, @my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
             },
@@ -38,6 +58,7 @@ describe(parsePrimaryReviewers.name, () => {
         {
             it: 'handles multiple primaries separated by commas and space',
             input: {
+                triggerText: 'primary reviewer',
                 bodyText:
                     'https://my-ticket-url.com/ticket-number\nPrimary reviewer: @my-name1 , @my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
             },
@@ -49,6 +70,7 @@ describe(parsePrimaryReviewers.name, () => {
         {
             it: 'ignores a later tag',
             input: {
+                triggerText: 'primary reviewer',
                 bodyText: '**Primary Reviewer**: @person Changes - ask @another for help',
             },
             expect: [
@@ -58,6 +80,7 @@ describe(parsePrimaryReviewers.name, () => {
         {
             it: 'handles no reviewers',
             input: {
+                triggerText: 'primary reviewer',
                 bodyText:
                     'https://my-ticket-url.com/ticket-number\nPrimary rev name1\n@my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
             },
@@ -66,6 +89,7 @@ describe(parsePrimaryReviewers.name, () => {
         {
             it: 'handles markdown formatting',
             input: {
+                triggerText: 'primary reviewer',
                 bodyText:
                     'https://my-ticket-url.com/ticket-number\n**Primary reviewer**: @name1\n@my-name2\nChanges\n\nadd primary reviewer support\n\nHow to test\nNothing to test.',
             },

@@ -10,11 +10,26 @@ import {removePrefix, safeMatch} from '@augment-vir/common';
  *
  * `['username', 'otherUsername']`
  */
-export function parsePrimaryReviewers({bodyText}: {bodyText: string}): string[] {
+export function parseDescriptionUsers({
+    triggerText,
+    bodyText,
+}: {
+    /**
+     * The start of the line for which usernames need to be parsed out of. An `'s'` is automatically
+     * allowed at the end of this text. Case insensitive.
+     *
+     * @example
+     *
+     * - `'primary reviewer'`
+     * - `'code owner'`
+     */
+    triggerText: string;
+    bodyText: string;
+}): string[] {
     const [
         ,
         match,
-    ] = safeMatch(bodyText, /primary reviewers?\W+((?:@[^@]+)+)(?:\n\n|$|\n#)/i);
+    ] = safeMatch(bodyText, new RegExp(`${triggerText}s?\\W+((?:@[^@]+)+)(?:\n\n|$|\n#)`, 'i'));
 
     if (!match) {
         return [];
