@@ -1,5 +1,13 @@
 {
-    "name": "github-adapter",
+    "name": "@review-vir/github-adapter",
+    "version": "3.0.0",
+    "description": "The official GitHub adapter for review-vir.",
+    "keywords": [
+        "github",
+        "adapter",
+        "vir",
+        "review-vir"
+    ],
     "homepage": "https://github.com/review-vir/review-vir",
     "bugs": {
         "url": "https://github.com/review-vir/review-vir/issues"
@@ -8,13 +16,11 @@
         "type": "git",
         "url": "git+https://github.com/review-vir/review-vir.git"
     },
+    "license": "(MIT or CC0 1.0)",
     "author": {
         "name": "review-vir",
         "url": "https://github.com/review-vir"
     },
-    "description": "",
-    "keywords": [],
-    "license": "(MIT or CC0 1.0)",
     "type": "module",
     "main": "src/index.ts",
     "module": "src/index.ts",
@@ -26,7 +32,27 @@
         "start": "virmator frontend",
         "test": "virmator test web",
         "test:coverage": "npm run test coverage",
-        "test:docs": "virmator docs check"
+        "test:docs": "virmator docs check",
+        "test:update": "npm test update"
+    },
+    "dependencies": {
+        "@augment-vir/assert": "^30.8.4",
+        "@augment-vir/common": "^30.8.4",
+        "@review-vir/adapter-core": "^3.0.0",
+        "@review-vir/common": "^3.0.0",
+        "object-shape-tester": "^3.1.2"
+    },
+    "devDependencies": {
+        "@augment-vir/test": "^30.8.4",
+        "@augment-vir/web": "^30.8.4",
+        "@web/dev-server-esbuild": "^1.0.3",
+        "@web/test-runner": "^0.19.0",
+        "@web/test-runner-commands": "^0.9.0",
+        "@web/test-runner-playwright": "^0.11.0",
+        "@web/test-runner-visual-regression": "^0.10.0",
+        "istanbul-smart-text-reporter": "^1.1.5",
+        "typescript": "^5.6.3",
+        "vite": "^5.4.11"
     },
     "engines": {
         "node": ">=22"

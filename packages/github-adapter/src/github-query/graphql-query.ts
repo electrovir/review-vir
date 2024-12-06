@@ -1,5 +1,12 @@
-import {defineShape, enumShape, or} from 'object-shape-tester';
-import {githubGraphqlErrorShape} from './github-graphql-error.js';
+import {defineShape, enumShape, optional, or, unknownShape} from 'object-shape-tester';
+
+export const githubGraphqlErrorShape = defineShape({
+    extensions: unknownShape(),
+    locations: [{line: 0, column: 0}],
+    message: '',
+    path: [or('', 0)],
+    type: or('', undefined),
+});
 
 /**
  * This was pulled out of the actual GraphQL responses. They almost match `NonNullable<
@@ -89,7 +96,7 @@ const githubReviewShape = defineShape(
     true,
 );
 
-export const githubPullRequestSearchResponseShape = defineShape(
+export const githubPullRequestShape = defineShape(
     {
         additions: 0,
         assignees: {
@@ -98,28 +105,14 @@ export const githubPullRequestSearchResponseShape = defineShape(
             ],
         },
         author: githubUserSearchResponseShape,
-        baseRef: or(
-            /** `null` means lack of permissions to read "Contents". */
-            null,
-            {
-                name: '',
-                target: {
-                    oid: '',
-                },
-            },
-        ),
+        baseRef: {
+            name: '',
+        },
         bodyText: '',
         mergeable: enumShape(GithubMergeableState),
-        headRef: or(
-            /** `null` means lack of permissions to read "Contents". */
-            null,
-            {
-                name: '',
-                target: {
-                    oid: '',
-                },
-            },
-        ),
+        headRef: {
+            name: '',
+        },
         labels: or(
             /** `null` means no labels */
             null,
@@ -206,15 +199,15 @@ export const githubPullRequestSearchResponseShape = defineShape(
     },
     true,
 );
-export type GithubSearchPullRequest = typeof githubPullRequestSearchResponseShape.runtimeType;
+export type GithubPullRequest = typeof githubPullRequestShape.runtimeType;
 
 /**
  * This shape is comes straight from an actual GitHub response to the below GraphQL query. If the
  * query changes, this must change too.
  */
-export const githubPullRequestGraphqlResponseShape = defineShape(
+export const githubSearchShape = defineShape(
     {
-        errors: or(undefined, [githubGraphqlErrorShape]),
+        errors: optional([githubGraphqlErrorShape]),
         data: {
             rateLimit: {
                 cost: 1,
@@ -232,7 +225,7 @@ export const githubPullRequestGraphqlResponseShape = defineShape(
                     hasNextPage: false,
                 },
                 nodes: [
-                    githubPullRequestSearchResponseShape,
+                    githubPullRequestShape,
                 ],
             },
         },
@@ -240,15 +233,14 @@ export const githubPullRequestGraphqlResponseShape = defineShape(
     true,
 );
 
-export type GithubPullRequestGraphqlResponse =
-    typeof githubPullRequestGraphqlResponseShape.runtimeType;
+export type GithubSearch = typeof githubSearchShape.runtimeType;
 
 /**
  * This query determines the above shape definition. If this query changes, make sure to change that
  * shape as well.
  */
-export const githubPullRequestGraphqlQuery = /* GraphQL */ `
-    query ($searchQuery: String!, $afterCursor: String) {
+export const githubSearchQuery = /* GraphQL */ `
+    query ($afterCursor: String) {
         rateLimit {
             cost
             limit
@@ -262,10 +254,14 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
             login
             url
         }
-        # first 99 = cost of 1
-        # first 100 = cost of 3
-        # (so use 99)
-        search(first: 99, after: $afterCursor, query: $searchQuery, type: ISSUE) {
+        # first 42 = cost of 3
+        # first 41 = cost of 2
+        search(
+            first: 1
+            after: $afterCursor
+            query: "is:open type:pr archived:false involves:@me"
+            type: ISSUE
+        ) {
             pageInfo {
                 endCursor
                 hasNextPage
@@ -317,18 +313,12 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                         url
                     }
                     baseRef {
-                        target {
-                            oid
-                        }
                         name
                     }
                     headRef {
-                        target {
-                            oid
-                        }
                         name
                     }
-                    labels(first: 100) {
+                    labels(first: 5) {
                         nodes {
                             color
                             name
@@ -359,7 +349,7 @@ export const githubPullRequestGraphqlQuery = /* GraphQL */ `
                             url
                         }
                     }
-                    reviewThreads(first: 100) {
+                    reviewThreads(first: 50) {
                         nodes {
                             isResolved
                         }

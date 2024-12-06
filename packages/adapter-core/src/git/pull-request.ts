@@ -98,10 +98,7 @@ export const pullRequestShape = defineShape({
             required: false,
         }),
     },
-    query: {
-        rawResults: unknownShape(),
-        exceedsCostThreshold: false,
-    },
+    raw: unknownShape(),
 });
 
 export type PullRequest = typeof pullRequestShape.runtimeType;

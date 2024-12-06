@@ -5,7 +5,6 @@ export const gitBranchShape = defineShape(
     {
         repo: gitRepoShape,
         branchName: '',
-        headCommitHash: '',
     },
     true,
 );

@@ -2,6 +2,8 @@ export * from './auth-store/auth-access.js';
 export * from './auth-store/auth-tokens.js';
 export * from './auth-store/encryption.js';
 export * from './auth-store/global-vars.js';
+export * from './git-adapter/define-git-adapter.js';
+export * from './git-adapter/git-adapter.event.js';
 export * from './git-adapter/git-adapter.js';
 export * from './git/chained-pull-requests.js';
 export * from './git/git-branch.js';

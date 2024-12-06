@@ -1,7 +1,4 @@
-import {GitData} from '../git/git-data.js';
 import {FetchGitDataFunction, GitAdapter} from './git-adapter.js';
-
-export type FetchGitDataResult = {queryCost: number; data: GitData[]};
 
 export type GitAdapterDefinitionParameters = {
     /**

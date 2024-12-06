@@ -1,33 +1,31 @@
 import {check} from '@augment-vir/assert';
 import {arrayToObject, typedObjectFromEntries} from '@augment-vir/common';
-import {parsePrimaryReviewers} from '@review-vir/common';
-import {createFullDateInUserTimezone} from 'date-vir';
-import {SupportedServiceName} from '../../../../../../../adapter-core/src/auth-store/auth-tokens.js';
 import {
+    GitUser,
     PullRequest,
-    PullRequestChecks,
     PullRequestMergeStatus,
-    PullRequestReview,
     PullRequestReviewStatus,
-} from '../../../../../data/git/pull-request.js';
-import {User} from '../../../../../data/git/user.js';
+    type PullRequestChecks,
+    type PullRequestReview,
+} from '@review-vir/adapter-core';
+import {parseDescriptionUsers} from '@review-vir/common';
+import {createFullDateInUserTimezone} from 'date-vir';
 import {
+    failedCheckRunConclusions,
     GithubGraphqlReviewState,
     GithubMergeableState,
-    GithubPullRequestGraphqlResponse,
-    GithubRunCheckState,
-    GithubSearchPullRequest,
-    GithubUserSearchResponse,
-    failedCheckRunConclusions,
     pendingCheckRunConclusions,
     successCheckRunConclusions,
-} from '../github-graphql-queries/github-graphql-pull-request-query.js';
+    type GithubPullRequest,
+    type GithubRunCheckState,
+    type GithubUserSearchResponse,
+} from './github-query/graphql-query.js';
 
-export function parseGithubSearchPullRequest(
+export function parseGithubPullRequest(
     authTokenName: string,
-    raw: Readonly<GithubSearchPullRequest>,
-    currentUser: Readonly<User>,
-    rateLimit: Readonly<GithubPullRequestGraphqlResponse['data']['rateLimit']>,
+    raw: Readonly<GithubPullRequest>,
+    currentUser: Readonly<GitUser>,
+    serviceName: string,
 ): PullRequest {
     const dates = {
         closed: raw.closedAt ? createFullDateInUserTimezone(raw.closedAt) : undefined,
@@ -38,10 +36,17 @@ export function parseGithubSearchPullRequest(
     const assignees = raw.assignees.nodes.map(parseGithubUser);
     const authors = [parseGithubUser(raw.author)];
 
-    const primaryReviewers = parsePrimaryReviewers(raw);
+    const primaryReviewers = parseDescriptionUsers({
+        bodyText: raw.bodyText,
+        triggerText: 'primary reviewer',
+    });
+    const codeOwners = parseDescriptionUsers({
+        bodyText: raw.bodyText,
+        triggerText: 'code owner',
+    });
     const pullRequestUsers: PullRequest['users'] = {
         assignees: groupUsersByUserName(assignees.length ? assignees : authors),
-        reviewers: parseReviews(primaryReviewers, raw),
+        reviewers: parseReviews({codeOwners, primaryReviewers}, raw),
     };
 
     const mergeStatus: PullRequestMergeStatus = raw.mergedAt
@@ -53,15 +58,10 @@ export function parseGithubSearchPullRequest(
             : PullRequestMergeStatus.Open;
 
     const pullRequest: PullRequest = {
-        auth: {
-            client: SupportedServiceName.Github,
-            tokenName: authTokenName,
-        },
+        authTokenName,
         branches: {
             headBranch: {
-                branchName: raw.headRef?.name || new Error("Missing 'Contents' read permissions."),
-                headCommitHash:
-                    raw.headRef?.target.oid || new Error("Missing 'Contents' read permissions."),
+                branchName: raw.headRef.name,
                 repo: {
                     isArchived: raw.headRepository.isArchived,
                     isPrivate: raw.headRepository.isPrivate,
@@ -71,9 +71,7 @@ export function parseGithubSearchPullRequest(
                 },
             },
             targetBranch: {
-                branchName: raw.baseRef?.name || new Error("Missing 'Contents' read permissions."),
-                headCommitHash:
-                    raw.baseRef?.target.oid || new Error("Missing 'Contents' read permissions."),
+                branchName: raw.baseRef.name,
                 repo: {
                     isArchived: raw.baseRepository.isArchived,
                     isPrivate: raw.baseRepository.isPrivate,
@@ -95,6 +93,7 @@ export function parseGithubSearchPullRequest(
             prNumber: String(raw.number),
             title: raw.title,
             owner: parseGithubUser(raw.baseRepository.owner),
+            gitServiceName: serviceName,
         },
         status: {
             checksStatus: parseStates(
@@ -104,14 +103,8 @@ export function parseGithubSearchPullRequest(
             commitCount: raw.commits.totalCount,
             mergeStatus,
             mergedBy: raw.mergedBy ? parseGithubUser(raw.mergedBy) : undefined,
-            needsReviewFromCurrentUser: determineIfNeedsReviewFromCurrentUser(
-                mergeStatus,
-                currentUser,
-                pullRequestUsers,
-            ),
-            userIsPrimaryReviewer: primaryReviewers.includes(currentUser.username),
             hasMergeConflicts: raw.mergeable === GithubMergeableState.Conflicting,
-            labels: raw.labels
+            pullRequestLabels: raw.labels
                 ? raw.labels.nodes.map((node) => {
                       return {
                           ...node,
@@ -121,14 +114,22 @@ export function parseGithubSearchPullRequest(
                 : [],
         },
         users: pullRequestUsers,
-        cost: rateLimit,
         raw,
+        currentUser: {
+            hasReviewed: !determineIfNeedsReviewFromCurrentUser(
+                mergeStatus,
+                currentUser,
+                pullRequestUsers,
+            ),
+            isCodeOwner: codeOwners.includes(currentUser.username),
+            isPrimaryReviewer: primaryReviewers.includes(currentUser.username),
+        },
     };
     return pullRequest;
 }
 
 function parseComments(
-    commentNodes: GithubSearchPullRequest['reviewThreads']['nodes'],
+    commentNodes: GithubPullRequest['reviewThreads']['nodes'],
 ): PullRequest['status']['comments'] {
     return commentNodes.reduce(
         (accum, current) => {
@@ -144,7 +145,7 @@ function parseComments(
 
 function determineIfNeedsReviewFromCurrentUser(
     mergeStatus: PullRequestMergeStatus,
-    user: Readonly<Pick<User, 'username'>>,
+    user: Readonly<Pick<GitUser, 'username'>>,
     pullRequestUsers: Readonly<Pick<PullRequest['users'], 'reviewers' | 'assignees'>>,
 ): boolean {
     return (
@@ -156,8 +157,14 @@ function determineIfNeedsReviewFromCurrentUser(
 }
 
 function parseReviews(
-    primaryReviewers: ReadonlyArray<string>,
-    raw: Readonly<Pick<GithubSearchPullRequest, 'latestOpinionatedReviews' | 'reviewRequests'>>,
+    {
+        codeOwners,
+        primaryReviewers,
+    }: {
+        primaryReviewers: ReadonlyArray<string>;
+        codeOwners: ReadonlyArray<string>;
+    },
+    raw: Readonly<Pick<GithubPullRequest, 'latestOpinionatedReviews' | 'reviewRequests'>>,
 ): PullRequest['users']['reviewers'] {
     const pendingReviewers = groupUsersByUserName(
         raw.reviewRequests.nodes.map((node) => parseGithubUser(node.requestedReviewer)),
@@ -203,6 +210,7 @@ function parseReviews(
                         username,
                     },
                     isPrimaryReviewer: primaryReviewers.includes(username),
+                    isCodeOwner: codeOwners.includes(username),
                     reviewStatus,
                 },
             ];
@@ -211,10 +219,11 @@ function parseReviews(
 }
 
 function parseStates(
+    /** Sometimes this is undefined even if nothing is wrong. */
     checkStates: ReadonlyArray<Readonly<GithubRunCheckState>> | undefined,
-): PullRequestChecks | Error {
+): PullRequestChecks | undefined {
     if (!checkStates) {
-        return new Error("Missing 'Contents' or 'Commit statuses' read permissions.");
+        return undefined;
     }
 
     const results = checkStates.reduce(
@@ -240,7 +249,7 @@ function parseStates(
     return results;
 }
 
-export function parseGithubUser(raw: GithubUserSearchResponse): User {
+export function parseGithubUser(raw: GithubUserSearchResponse): GitUser {
     return {
         avatarUrl: raw.teamAvatarUrl || raw.avatarUrl || '',
         profileUrl: raw.url,
@@ -248,7 +257,7 @@ export function parseGithubUser(raw: GithubUserSearchResponse): User {
     };
 }
 
-function groupUsersByUserName(users: ReadonlyArray<Readonly<User>>) {
+function groupUsersByUserName(users: ReadonlyArray<Readonly<GitUser>>) {
     return arrayToObject(users, (user) => {
         return {
             key: user.username,

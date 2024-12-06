@@ -1,8 +1,9 @@
 {
     "name": "@review-vir/adapter-core",
-    "description": "Core functionality for review-vir adapter.",
+    "version": "3.0.0",
+    "description": "Core functionality for review-vir adapters.",
     "keywords": [
-        "review",
+        "review-vir",
         "vir",
         "git",
         "code review"
