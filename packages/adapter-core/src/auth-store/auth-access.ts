@@ -1,4 +1,5 @@
-import {check} from '@augment-vir/assert';
+import {assertWrap, check} from '@augment-vir/assert';
+import {awaitedForEach} from '@augment-vir/common';
 import localForage from 'localforage-esm';
 import {isValidShape} from 'object-shape-tester';
 import {
@@ -119,3 +120,17 @@ export async function saveServiceAuthTokens({
         await reviewVirAuthTokensStore.removeItem(serviceName);
     }
 }
+
+export async function removeUnusedServiceAuthTokens(supportedServiceNames: ReadonlyArray<string>) {
+    const currentKeys = await reviewVirAuthTokensStore.keys();
+
+    const unusedKeys = currentKeys.filter(
+        (currentKey) => !supportedServiceNames.includes(currentKey),
+    );
+
+    await awaitedForEach(unusedKeys, async (unusedKey) => {
+        await reviewVirAuthTokensStore.removeItem(unusedKey);
+    });
+}
+
+assertWrap.isString('hi');

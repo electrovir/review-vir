@@ -1,12 +1,9 @@
-import {classShape, defineShape, or} from 'object-shape-tester';
-import {gitUserShape} from './git-user.js';
+import {fullDateShape} from 'date-vir';
+import {defineShape} from 'object-shape-tester';
 import {pullRequestShape} from './pull-request.js';
 
-export const gitDataShape = defineShape(
-    {
-        user: gitUserShape,
-        pullRequests: [or(pullRequestShape, classShape(Error))],
-    },
-    true,
-);
+export const gitDataShape = defineShape({
+    pullRequests: [pullRequestShape],
+    time: fullDateShape,
+});
 export type GitData = typeof gitDataShape.runtimeType;

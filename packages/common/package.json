@@ -35,19 +35,19 @@
         "test:docs": "virmator docs check"
     },
     "dependencies": {
-        "@augment-vir/assert": "^30.8.4",
-        "@augment-vir/common": "^30.8.4"
+        "@augment-vir/assert": "^31.1.1",
+        "@augment-vir/common": "^31.1.1"
     },
     "devDependencies": {
-        "@augment-vir/test": "^30.8.4",
+        "@augment-vir/test": "^31.1.1",
         "@web/dev-server-esbuild": "^1.0.3",
         "@web/test-runner": "^0.19.0",
         "@web/test-runner-commands": "^0.9.0",
         "@web/test-runner-playwright": "^0.11.0",
         "@web/test-runner-visual-regression": "^0.10.0",
         "istanbul-smart-text-reporter": "^1.1.5",
-        "markdown-code-example-inserter": "^3.0.2",
-        "typedoc": "^0.27.1",
+        "markdown-code-example-inserter": "^3.0.3",
+        "typedoc": "^0.27.4",
         "typescript": "~5.6.3"
     },
     "engines": {

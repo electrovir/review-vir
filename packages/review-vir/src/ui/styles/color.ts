@@ -8,3 +8,11 @@ export function calculateTextColor(colorString: string): TextColor {
     const textColorString = onWhite > onBlack ? 'white' : 'black';
     return textColorString;
 }
+
+export const sharedColors = {
+    error: 'red',
+    inProgress: 'dodgerblue',
+    codeOwner: 'dodgerblue',
+    primary: 'orange',
+    success: 'green',
+};

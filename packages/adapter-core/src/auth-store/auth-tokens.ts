@@ -28,7 +28,10 @@ export function assertValidAuthToken(
     if (!input.authTokenName) {
         throw new AuthTokenValidationError('Empty auth token name', serviceName);
     } else if (!input.authTokenSecret) {
-        throw new AuthTokenValidationError('Empty auth token secret', serviceName);
+        throw new AuthTokenValidationError(
+            `Empty auth token secret for token '${input.authTokenName}'`,
+            serviceName,
+        );
     }
 }
 

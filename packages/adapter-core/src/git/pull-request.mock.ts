@@ -1,7 +1,7 @@
-import {utcTimezone, type FullDate} from 'date-vir';
+import {getNowInUtcTimezone, utcTimezone, type FullDate} from 'date-vir';
 import {mockGitBranch} from './git-branch.mock.js';
 import {mockGitUser} from './git-user.mock.js';
-import {PullRequest, PullRequestMergeStatus} from './pull-request.js';
+import {PullRequest, PullRequestDisplayStatus, PullRequestMergeStatus} from './pull-request.js';
 
 export const mockPullRequestDate: FullDate = {
     year: 2024,
@@ -37,6 +37,7 @@ export const mockPullRequest: PullRequest = {
         hasReviewed: false,
         isCodeOwner: true,
         isPrimaryReviewer: true,
+        isAssignee: false,
     },
     dates: {
         closed: undefined,
@@ -51,11 +52,10 @@ export const mockPullRequest: PullRequest = {
         title: 'test',
         gitServiceName: 'github',
     },
-    query: {
-        exceedsCostThreshold: false,
-        rawResults: {},
-    },
+    raw: {},
+    fetchDate: getNowInUtcTimezone(),
     status: {
+        displayStatus: PullRequestDisplayStatus.Draft,
         checksStatus: {
             failCount: 0,
             inProgressCount: 1,

@@ -1,7 +1,7 @@
-import {Values} from '@augment-vir/common';
-import {RequireExactlyOne} from 'type-fest';
+import {type Values} from '@augment-vir/common';
+import {type RequireExactlyOne} from 'type-fest';
 import {defineTypedCustomEvent, defineTypedEvent} from 'typed-event-target';
-import {GitData} from '../git/git-data.js';
+import {type GitData} from '../git/git-data.js';
 
 export enum GitUpdatesStoppedReason {
     HighFailureRate = 'high-failure-rate',

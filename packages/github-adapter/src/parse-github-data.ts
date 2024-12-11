@@ -3,13 +3,15 @@ import {arrayToObject, typedObjectFromEntries} from '@augment-vir/common';
 import {
     GitUser,
     PullRequest,
+    PullRequestDisplayStatus,
     PullRequestMergeStatus,
     PullRequestReviewStatus,
     type PullRequestChecks,
     type PullRequestReview,
 } from '@review-vir/adapter-core';
 import {parseDescriptionUsers} from '@review-vir/common';
-import {createFullDateInUserTimezone} from 'date-vir';
+import {createFullDateInUserTimezone, getNowInUserTimezone} from 'date-vir';
+import type {OmitDeep} from 'type-fest';
 import {
     failedCheckRunConclusions,
     GithubGraphqlReviewState,
@@ -57,7 +59,7 @@ export function parseGithubPullRequest(
             ? PullRequestMergeStatus.Draft
             : PullRequestMergeStatus.Open;
 
-    const pullRequest: PullRequest = {
+    const pullRequest = {
         authTokenName,
         branches: {
             headBranch: {
@@ -114,18 +116,27 @@ export function parseGithubPullRequest(
                 : [],
         },
         users: pullRequestUsers,
-        raw,
         currentUser: {
             hasReviewed: !determineIfNeedsReviewFromCurrentUser(
                 mergeStatus,
                 currentUser,
                 pullRequestUsers,
             ),
+            isAssignee: currentUser.username in pullRequestUsers.assignees,
             isCodeOwner: codeOwners.includes(currentUser.username),
             isPrimaryReviewer: primaryReviewers.includes(currentUser.username),
         },
+        raw,
+        fetchDate: getNowInUserTimezone(),
     };
-    return pullRequest;
+
+    return {
+        ...pullRequest,
+        status: {
+            ...pullRequest.status,
+            displayStatus: determineDisplayStatus(pullRequest),
+        },
+    };
 }
 
 function parseComments(
@@ -249,6 +260,46 @@ function parseStates(
     return results;
 }
 
+function determineDisplayStatus(
+    pullRequest: OmitDeep<PullRequest, 'status.displayStatus'>,
+): PullRequestDisplayStatus {
+    if (pullRequest.status.mergeStatus === PullRequestMergeStatus.Draft) {
+        return PullRequestDisplayStatus.Draft;
+    } else if (pullRequest.currentUser.isPrimaryReviewer) {
+        return PullRequestDisplayStatus.PrimaryReviewer;
+    } else if (pullRequest.currentUser.isCodeOwner) {
+        return PullRequestDisplayStatus.CodeOwner;
+    } else if (pullRequest.status.hasMergeConflicts) {
+        return PullRequestDisplayStatus.MergeConflicts;
+    } else if (
+        pullRequest.status.checksStatus?.failCount &&
+        pullRequest.status.checksStatus.inProgressCount
+    ) {
+        return PullRequestDisplayStatus.BuildFailureInProgress;
+    } else if (pullRequest.status.checksStatus?.failCount) {
+        return PullRequestDisplayStatus.BuildFailureFinished;
+    } else if (pullRequest.status.comments.resolved < pullRequest.status.comments.total) {
+        return PullRequestDisplayStatus.UnresolvedComments;
+    } else if (
+        (!pullRequest.status.checksStatus ||
+            pullRequest.status.checksStatus.successCount !==
+                pullRequest.status.checksStatus.totalCount) &&
+        Object.values(pullRequest.users.reviewers).every((user) => {
+            if (user.isCodeOwner || user.isPrimaryReviewer) {
+                /** Only wait for accepted reviews for code owners and primary reviewers. */
+                return user.reviewStatus === PullRequestReviewStatus.Accepted;
+            } else {
+                /** Any rejected review blocks merging. */
+                return user.reviewStatus !== PullRequestReviewStatus.Rejected;
+            }
+        })
+    ) {
+        return PullRequestDisplayStatus.Waiting;
+    } else {
+        return PullRequestDisplayStatus.ReadyToMerge;
+    }
+}
+
 export function parseGithubUser(raw: GithubUserSearchResponse): GitUser {
     return {
         avatarUrl: raw.teamAvatarUrl || raw.avatarUrl || '',
@@ -263,5 +314,5 @@ function groupUsersByUserName(users: ReadonlyArray<Readonly<GitUser>>) {
             key: user.username,
             value: user,
         };
-    });
+    }) as Record<string, GitUser>;
 }

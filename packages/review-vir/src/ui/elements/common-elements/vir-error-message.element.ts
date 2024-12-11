@@ -8,7 +8,7 @@ export const VirErrorMessage = defineElementNoInputs({
             font-weight: bold;
         }
     `,
-    renderCallback() {
+    render() {
         return html`
             <slot></slot>
         `;

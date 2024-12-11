@@ -16,6 +16,27 @@ export enum PullRequestReviewStatus {
     Pending = 'pending',
 }
 
+export enum PullRequestDisplayStatus {
+    /** Affects all pull requests. */
+
+    Draft = 'draft',
+    ReadyToMerge = 'ready-to-merge',
+    /** Waiting either for builds or reviews. */
+    Waiting = 'waiting',
+
+    /** Affects only reviewer pull requests. */
+
+    PrimaryReviewer = 'primary-reviewer',
+    CodeOwner = 'code-owner',
+
+    /** Affects only assigned pull requests. */
+
+    MergeConflicts = 'merge-conflicts',
+    BuildFailureInProgress = 'build-failure-in-progress',
+    BuildFailureFinished = 'build-failure-finished',
+    UnresolvedComments = 'unresolved-comments',
+}
+
 const pullRequestChecksShape = defineShape(
     {
         successCount: 0,
@@ -60,6 +81,7 @@ export const pullRequestShape = defineShape({
         closed: or(undefined, fullDateShape),
     },
     status: {
+        displayStatus: enumShape(PullRequestDisplayStatus),
         checksStatus: or(pullRequestChecksShape, undefined),
         comments: {
             resolved: 0,
@@ -77,6 +99,7 @@ export const pullRequestShape = defineShape({
         hasMergeConflicts: false,
     },
     currentUser: {
+        isAssignee: false,
         isPrimaryReviewer: false,
         isCodeOwner: false,
         hasReviewed: false,
@@ -90,15 +113,16 @@ export const pullRequestShape = defineShape({
         reviewers: indexedKeys({
             keys: '',
             values: pullRequestReviewShape,
-            required: false,
+            required: true,
         }),
         assignees: indexedKeys({
             keys: '',
             values: gitUserShape,
-            required: false,
+            required: true,
         }),
     },
     raw: unknownShape(),
+    fetchDate: fullDateShape,
 });
 
 export type PullRequest = typeof pullRequestShape.runtimeType;

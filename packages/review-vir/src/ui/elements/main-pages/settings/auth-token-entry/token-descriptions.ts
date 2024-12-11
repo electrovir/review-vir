@@ -1,13 +1,17 @@
+import {GithubAdapter} from '@review-vir/github-adapter';
 import {HTMLTemplateResult, html} from 'element-vir';
-import {SupportedServiceName} from '../../../../../../adapter-core/src/auth-store/auth-tokens.js';
+import type {GitServiceName} from '../../../../../data/all-adapters.js';
 
 export type Permission = {label: string; value: string};
 
-export const tokenDescriptions: Record<
-    SupportedServiceName,
-    {intro: HTMLTemplateResult; permissions: Permission[]}
+export const serviceAuthTokenDescriptions: Record<
+    GitServiceName,
+    {
+        intro: HTMLTemplateResult;
+        permissions: Permission[];
+    }
 > = {
-    [SupportedServiceName.Github]: {
+    [GithubAdapter.serviceName]: {
         intro: html`
             You will need a
             <a href="https://github.com/settings/tokens?type=beta">

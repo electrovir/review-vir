@@ -1,12 +1,14 @@
-import {check} from '@augment-vir/assert';
 import {FullRoute, SpaRouter} from 'spa-router-vir';
 
 export enum ReviewVirMainPath {
-    Auth = 'auth',
-    PullRequests = 'pull-requests',
+    Settings = 'settings',
+    CodeReview = 'code-review',
 }
 
-export type ValidReviewVirPaths = [ReviewVirMainPath.Auth] | [ReviewVirMainPath.PullRequests];
+export type ValidReviewVirPaths =
+    | [ReviewVirMainPath.Settings]
+    | [ReviewVirMainPath.CodeReview, /** Organization name. */ string]
+    | [ReviewVirMainPath.CodeReview];
 
 export type ReviewVirFullRoute = Required<
     Readonly<FullRoute<ValidReviewVirPaths, undefined, undefined>>
@@ -14,7 +16,9 @@ export type ReviewVirFullRoute = Required<
 
 export const defaultReviewVirFullRoute: Readonly<ReviewVirFullRoute> = {
     hash: undefined,
-    paths: [ReviewVirMainPath.PullRequests],
+    paths: [
+        ReviewVirMainPath.CodeReview,
+    ],
     search: undefined,
 } as const;
 
@@ -37,8 +41,21 @@ export type ReviewVirRouter = ReturnType<typeof createReviewVirRouter>;
 
 function sanitizePaths(rawPaths: ReadonlyArray<string>): ValidReviewVirPaths {
     const mainPath = rawPaths[0];
-    if (check.isEnumValue(mainPath, ReviewVirMainPath)) {
-        return [mainPath];
+    if (mainPath === ReviewVirMainPath.Settings) {
+        return [
+            ReviewVirMainPath.Settings,
+        ];
+    } else if (mainPath === ReviewVirMainPath.CodeReview) {
+        if (rawPaths[1]) {
+            return [
+                ReviewVirMainPath.CodeReview,
+                rawPaths[1],
+            ];
+        } else {
+            return [
+                ReviewVirMainPath.CodeReview,
+            ];
+        }
     } else {
         return defaultReviewVirFullRoute.paths;
     }

@@ -7,6 +7,7 @@ const baseConfig = defineConfig({
         'no-orphans': {
             from: [
                 'src/index.ts',
+                '\\.snapshot\\.web\\.mjs$',
             ],
         },
     },

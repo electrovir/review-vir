@@ -1,4 +1,5 @@
-import {defineGitAdapter, type GitUser} from '@review-vir/adapter-core';
+import {defineGitAdapter, type FetchGitDataResult, type GitUser} from '@review-vir/adapter-core';
+import {getNowInUserTimezone} from 'date-vir';
 import {fetchGithubPullRequests} from './github-query/fetch-github.js';
 import {parseGithubPullRequest, parseGithubUser} from './parse-github-data.js';
 
@@ -15,14 +16,18 @@ export const GithubAdapter = defineGitAdapter({
             parseGithubPullRequest(authToken.authTokenName, rawPullRequest, user, serviceName),
         );
 
-        return {
+        const finalizedData: FetchGitDataResult = {
             data: [
                 {
                     pullRequests,
-                    user,
+                    time: getNowInUserTimezone(),
                 },
             ],
             queryCost: githubData.rateLimit.cost,
         };
+
+        console.info('Fetched GitHub data:', finalizedData);
+
+        return finalizedData;
     },
 });

@@ -16,6 +16,12 @@
     "references": [
         {
             "path": "../common"
+        },
+        {
+            "path": "../adapter-core"
+        },
+        {
+            "path": "../github-adapter"
         }
     ]
 }

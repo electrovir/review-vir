@@ -1,4 +1,4 @@
-import {defineShape, enumShape, optional, or, unknownShape} from 'object-shape-tester';
+import {defineShape, enumShape, or, unknownShape} from 'object-shape-tester';
 
 export const githubGraphqlErrorShape = defineShape({
     extensions: unknownShape(),
@@ -207,7 +207,7 @@ export type GithubPullRequest = typeof githubPullRequestShape.runtimeType;
  */
 export const githubSearchShape = defineShape(
     {
-        errors: optional([githubGraphqlErrorShape]),
+        errors: or([githubGraphqlErrorShape], undefined),
         data: {
             rateLimit: {
                 cost: 1,
@@ -257,7 +257,7 @@ export const githubSearchQuery = /* GraphQL */ `
         # first 42 = cost of 3
         # first 41 = cost of 2
         search(
-            first: 1
+            first: 41
             after: $afterCursor
             query: "is:open type:pr archived:false involves:@me"
             type: ISSUE

@@ -1,25 +1,48 @@
-import {getOrSet, mapObjectValues} from '@augment-vir/common';
-import {FullDate, isDateAfter} from 'date-vir';
+import {getOrSet, log, mapObjectValues, type Values} from '@augment-vir/common';
+import {FullDate, getNowInUserTimezone, isDateAfter} from 'date-vir';
 import {GitUser} from './git-user.js';
 import {PullRequest, PullRequestMergeStatus} from './pull-request.js';
 
 export type PullRequestsByStatus = {
     /** Pull Request for which the current user is a reviewer. */
-    reviewer: Readonly<ChainedPullRequest>[];
+    reviewer: ReadonlyArray<Readonly<ChainedPullRequest>>;
     /**
      * Pull Request for which the current user is an assignee. (This takes precedence over
      * `reviewer`.
      */
-    assigned: Readonly<ChainedPullRequest>[];
+    assigned: ReadonlyArray<Readonly<ChainedPullRequest>>;
 };
 
-export type OwnedPullRequests = {
-    owner: GitUser;
-    chainedPullRequests: PullRequestsByStatus;
-};
+export function countChainedPullRequests(
+    chainedPullRequests: ReadonlyArray<Readonly<ChainedPullRequest>>,
+) {
+    const counts = {
+        total: 0,
+        notReviewed: 0,
+    };
+
+    chainedPullRequests.forEach(({children, pullRequest}) => {
+        counts.total++;
+        if (!pullRequest.currentUser.hasReviewed) {
+            counts.notReviewed++;
+        }
+
+        const childCounts = countChainedPullRequests(children);
+        counts.total += childCounts.total;
+        counts.notReviewed += childCounts.notReviewed;
+    });
+
+    return counts;
+}
 
 export type PullRequestsByOwner = {
-    [OwnerName in string]: OwnedPullRequests;
+    [OwnerName in string]: {
+        totalCount: number;
+        owner: GitUser;
+        reviewers: Record<string, {count: number; user: GitUser}>;
+        earliestUpdateDate: FullDate;
+        pullRequests: PullRequestsByStatus;
+    };
 };
 
 export type ChainedPullRequest = {
@@ -31,18 +54,22 @@ export type ChainedPullRequest = {
 };
 
 export function organizePullRequests(
-    currentUser: Pick<GitUser, 'username'>,
     pullRequests: ReadonlyArray<Readonly<PullRequest>>,
 ): PullRequestsByOwner {
     const rawPullRequests: {
         [OwnerName in string]: {
             owner: GitUser;
+            totalCount: number;
             pullRequests: {
                 reviewer: PullRequest[];
                 assigned: PullRequest[];
             };
+            reviewers: Record<string, {count: number; user: GitUser}>;
+            earliestUpdateDate: FullDate;
         };
     } = {};
+
+    const allPullRequestIds: Set<string> = new Set();
 
     pullRequests.forEach((pullRequest) => {
         const organizedRawPullRequests = getOrSet(
@@ -51,37 +78,73 @@ export function organizePullRequests(
             () => {
                 return {
                     owner: pullRequest.id.owner,
+                    totalCount: 0,
                     pullRequests: {
                         assigned: [],
                         reviewer: [],
                     },
+                    earliestUpdateDate: getNowInUserTimezone(),
+                    reviewers: {},
                 };
             },
         );
+
+        const pullRequestId = `${pullRequest.id.gitServiceName}:${pullRequest.id.prId}`;
+
+        if (allPullRequestIds.has(pullRequestId)) {
+            log.error(`Ignoring duplicate pull request: ${pullRequestId}`, pullRequest);
+            return;
+        }
+
+        allPullRequestIds.add(pullRequestId);
 
         if (
             pullRequest.status.mergeStatus === PullRequestMergeStatus.Merged ||
             pullRequest.status.mergeStatus === PullRequestMergeStatus.Rejected
         ) {
             return;
-        } else if (currentUser.username in pullRequest.users.assignees) {
+        } else if (pullRequest.currentUser.isAssignee) {
             organizedRawPullRequests.pullRequests.assigned.push(pullRequest);
-        } else if (currentUser.username in pullRequest.users.reviewers) {
+        } else {
             organizedRawPullRequests.pullRequests.reviewer.push(pullRequest);
         }
+
+        if (
+            isDateAfter({
+                fullDate: organizedRawPullRequests.earliestUpdateDate,
+                relativeTo: pullRequest.fetchDate,
+            })
+        ) {
+            organizedRawPullRequests.earliestUpdateDate = pullRequest.fetchDate;
+        }
+
+        Object.values(pullRequest.users.reviewers).forEach((reviewer) => {
+            const reviewerWithCount = getOrSet(
+                organizedRawPullRequests.reviewers,
+                reviewer.user.username,
+                () => {
+                    return {
+                        count: 0,
+                        user: reviewer.user,
+                    };
+                },
+            );
+
+            if (reviewer.isCodeOwner || reviewer.isPrimaryReviewer) {
+                reviewerWithCount.count++;
+            }
+        });
+        organizedRawPullRequests.totalCount++;
     });
 
     const chainedPullRequestsByOwner = mapObjectValues(
         rawPullRequests,
-        (ownerName, ownedPullRequests): OwnedPullRequests => {
+        (ownerName, {pullRequests, ...rest}): Values<PullRequestsByOwner> => {
             return {
-                owner: ownedPullRequests.owner,
-                chainedPullRequests: mapObjectValues(
-                    ownedPullRequests.pullRequests,
-                    (reviewType, pullRequests) => {
-                        return createChainedPullRequests(pullRequests);
-                    },
-                ),
+                pullRequests: mapObjectValues(pullRequests, (reviewType, pullRequests) => {
+                    return createChainedPullRequests(pullRequests);
+                }),
+                ...rest,
             };
         },
     );
@@ -197,9 +260,9 @@ function getPullRequestSortNumber(pullRequest: Readonly<ChainedPullRequest>): nu
     const isCodeOwner = needsReview && pullRequest.pullRequest.currentUser.isCodeOwner;
 
     const draft = isDraft ? 0 : 10_000;
-    const primary = isPrimaryReviewer ? 1000 : 0;
-    const codeOwner = isCodeOwner ? 100 : 0;
-    const review = needsReview ? 10 : 0;
+    const review = needsReview ? 1000 : 0;
+    const primary = isPrimaryReviewer ? 100 : 0;
+    const codeOwner = isCodeOwner ? 10 : 0;
 
     return draft + primary + codeOwner + review;
 }

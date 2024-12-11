@@ -14,7 +14,10 @@ import {
     type GitAdapterEvents,
 } from './git-adapter.event.js';
 
-export type FetchGitDataResult = {queryCost: number; data: GitData[]};
+export type FetchGitDataResult = {
+    queryCost: number;
+    data: GitData[];
+};
 export type FetchGitDataFunction = (
     authToken: Readonly<AuthToken>,
 ) => MaybePromise<FetchGitDataResult>;

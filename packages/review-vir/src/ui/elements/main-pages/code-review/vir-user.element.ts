@@ -1,19 +1,34 @@
-import {classMap, css, defineElement, html, ifDefined, nothing} from 'element-vir';
-import {StatusFailure24Icon, StatusSuccess24Icon, ViraIcon, ViraIconSvg, ViraImage} from 'vira';
-import {PullRequestReview, PullRequestReviewStatus} from '../../../data/git/pull-request.js';
-import {User} from '../../../data/git/user.js';
+import {
+    PullRequestReviewStatus,
+    type GitUser,
+    type PullRequestReview,
+} from '@review-vir/adapter-core';
+import {classMap, css, defineElement, html, ifDefined, nothing, unsafeCSS} from 'element-vir';
+import {
+    StatusFailure24Icon,
+    StatusSuccess24Icon,
+    ViraIcon,
+    viraIconCssVars,
+    ViraIconSvg,
+    ViraImage,
+} from 'vira';
+import {sharedColors} from '../../../styles/color.js';
+import {avatarSize} from '../../../styles/size.js';
 
 export const VirUser = defineElement<{
-    user: Readonly<User>;
+    user: Readonly<GitUser | PullRequestReview>;
     show: Readonly<{
         avatar: boolean;
         username: boolean;
         statusSpace?: boolean | undefined;
     }>;
-    review?: Readonly<Omit<PullRequestReview, 'user'>> | undefined;
 }>()({
     tagName: 'vir-user',
     styles: css`
+        :host {
+            ${viraIconCssVars['vira-icon-fill-color'].name}: white;
+        }
+
         a {
             display: flex;
             align-items: center;
@@ -21,21 +36,22 @@ export const VirUser = defineElement<{
         }
 
         ${ViraImage} {
-            max-height: 1em;
-            max-width: 1em;
-            min-height: 1em;
-            min-width: 1em;
+            max-height: ${avatarSize}px;
+            max-width: ${avatarSize}px;
+            min-height: ${avatarSize}px;
+            min-width: ${avatarSize}px;
+            box-sizing: border-box;
             border-radius: 50%;
             background-color: white;
             border: 2px solid #eee;
         }
 
         ${ViraIcon} {
-            color: red;
+            color: ${unsafeCSS(sharedColors.error)};
         }
 
         ${ViraIcon}.success {
-            color: green;
+            color: ${unsafeCSS(sharedColors.success)};
         }
 
         .avatar {
@@ -44,31 +60,36 @@ export const VirUser = defineElement<{
         }
 
         .is-primary ${ViraImage} {
-            border-color: red;
+            border-color: ${unsafeCSS(sharedColors.primary)};
+        }
+        .is-code-owner ${ViraImage} {
+            border-color: ${unsafeCSS(sharedColors.codeOwner)};
         }
 
         .placeholder {
             visibility: hidden;
         }
     `,
-    renderCallback({inputs}) {
+    render({inputs}) {
+        const review: PullRequestReview | undefined =
+            'user' in inputs.user ? inputs.user : undefined;
+        const user = 'user' in inputs.user ? inputs.user.user : inputs.user;
+
         const statusIcon: ViraIconSvg | undefined =
-            inputs.review == undefined ||
-            inputs.review.reviewStatus === PullRequestReviewStatus.Pending
+            review == undefined || review.reviewStatus === PullRequestReviewStatus.Pending
                 ? undefined
-                : inputs.review.reviewStatus === PullRequestReviewStatus.Accepted
+                : review.reviewStatus === PullRequestReviewStatus.Accepted
                   ? StatusSuccess24Icon
                   : StatusFailure24Icon;
 
         const shouldShowStatusPlaceholder = !!inputs.show.statusSpace && !statusIcon;
 
         const description: string | undefined =
-            inputs.review == undefined ||
-            inputs.review.reviewStatus === PullRequestReviewStatus.Pending
+            review == undefined || review.reviewStatus === PullRequestReviewStatus.Pending
                 ? undefined
-                : inputs.review.reviewStatus === PullRequestReviewStatus.Accepted
-                  ? `${inputs.user.username} has accepted this pull request.`
-                  : `${inputs.user.username} has requested changes on this pull request.`;
+                : review.reviewStatus === PullRequestReviewStatus.Accepted
+                  ? `${user.username} has accepted this pull request.`
+                  : `${user.username} has requested changes on this pull request.`;
 
         const statusTemplate =
             statusIcon || shouldShowStatusPlaceholder
@@ -78,8 +99,7 @@ export const VirUser = defineElement<{
                           fitContainer: true,
                       })}
                           class="status-icon ${classMap({
-                              success:
-                                  inputs.review?.reviewStatus === PullRequestReviewStatus.Accepted,
+                              success: review?.reviewStatus === PullRequestReviewStatus.Accepted,
                               placeholder: shouldShowStatusPlaceholder,
                           })}"
                           title=${ifDefined(description)}
@@ -89,20 +109,20 @@ export const VirUser = defineElement<{
         const avatarTemplate = html`
             <div class="avatar">
                 <${ViraImage.assign({
-                    imageUrl: inputs.user.avatarUrl,
+                    imageUrl: user.avatarUrl,
                 })}
-                    title=${inputs.user.username}
+                    title=${user.username}
                 ></${ViraImage}>
                 ${statusTemplate}
             </div>
         `;
 
-        const usernameTemplate = inputs.user.username;
+        const usernameTemplate = user.username;
 
         return html`
             <a
-                href=${inputs.user.profileUrl}
-                class=${classMap({'is-primary': !!inputs.review?.isPrimaryReviewer})}
+                href=${user.profileUrl}
+                class=${classMap({'is-primary': !!review?.isPrimaryReviewer})}
             >
                 ${inputs.show.avatar ? avatarTemplate : nothing}
                 ${inputs.show.username ? usernameTemplate : nothing}

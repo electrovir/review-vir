@@ -1,34 +1,31 @@
 import {copyThroughJson, filterOutIndexes, makeWritable} from '@augment-vir/common';
-import {css, defineElement, defineElementEvent, html, listen, nothing} from 'element-vir';
+import {AuthToken} from '@review-vir/adapter-core';
+import {css, defineElement, defineElementEvent, html, listen} from 'element-vir';
 import {
     CloseX24Icon,
     ViraButton,
-    ViraButtonStyleEnum,
+    ViraButtonStyle,
     ViraIcon,
     ViraInput,
     ViraInputType,
     noNativeFormStyles,
     noNativeSpacing,
 } from 'vira';
-import {
-    AuthToken,
-    SupportedServiceName,
-} from '../../../../../../adapter-core/src/auth-store/auth-tokens.js';
-import {VirErrorMessage} from '../../common-elements/vir-error-message.element.js';
-import {tokenDescriptions} from './token-descriptions.js';
+import {GitServiceName} from '../../../../../data/all-adapters.js';
+import {serviceAuthTokenDescriptions} from './token-descriptions.js';
 
 export type AuthTokenEntryError = {
-    serviceName: SupportedServiceName;
+    serviceName: GitServiceName;
     authTokenIndex: number;
     message: string;
 };
 
-export const VirServiceAuthTokenEntry = defineElement<{
-    authTokenEntryError: Readonly<AuthTokenEntryError> | undefined;
-    serviceName: SupportedServiceName;
+export const VirServiceAuthTokens = defineElement<{
+    serviceName: GitServiceName;
     authTokens: ReadonlyArray<Readonly<AuthToken>>;
+    disabled: boolean;
 }>()({
-    tagName: 'vir-service-auth-token-entry',
+    tagName: 'vir-service-auth-tokens',
     styles: css`
         :host,
         .tokens {
@@ -79,18 +76,8 @@ export const VirServiceAuthTokenEntry = defineElement<{
     events: {
         authTokensChange: defineElementEvent<ReadonlyArray<Readonly<AuthToken>>>(),
     },
-    renderCallback({inputs, events, dispatch}) {
+    render({inputs, events, dispatch}) {
         const authTokenTemplates = inputs.authTokens.map((authToken, authTokenIndex) => {
-            const isErrorRelevant =
-                inputs.authTokenEntryError?.authTokenIndex === authTokenIndex &&
-                inputs.authTokenEntryError.serviceName === inputs.serviceName;
-
-            const errorTemplate = isErrorRelevant
-                ? html`
-                      <${VirErrorMessage}>${inputs.authTokenEntryError.message}</${VirErrorMessage}>
-                  `
-                : nothing;
-
             function modifyAuthToken(fieldToEdit: keyof AuthToken, value: string) {
                 const newAuthTokens = copyThroughJson(inputs.authTokens);
                 const authTokenToEdit = newAuthTokens[authTokenIndex];
@@ -106,10 +93,10 @@ export const VirServiceAuthTokenEntry = defineElement<{
 
             return html`
                 <div class="auth-token-entry">
-                    ${errorTemplate}
                     <label>
                         <p>Token name</p>
                         <${ViraInput.assign({
+                            disabled: inputs.disabled,
                             value: authToken.authTokenName,
                         })}
                             ${listen(ViraInput.events.valueChange, (event) => {
@@ -122,6 +109,7 @@ export const VirServiceAuthTokenEntry = defineElement<{
                         <div class="with-delete-wrapper">
                             <${ViraInput.assign({
                                 value: authToken.authTokenSecret,
+                                disabled: inputs.disabled,
                                 type: ViraInputType.Password,
                             })}
                                 ${listen(ViraInput.events.valueChange, (event) => {
@@ -129,6 +117,7 @@ export const VirServiceAuthTokenEntry = defineElement<{
                                 })}
                             ></${ViraInput}>
                             <button
+                                ?disabled=${inputs.disabled}
                                 class="delete"
                                 ${listen('click', () => {
                                     const newAuthTokens = filterOutIndexes(
@@ -147,7 +136,7 @@ export const VirServiceAuthTokenEntry = defineElement<{
             `;
         });
 
-        const tokenDescription = tokenDescriptions[inputs.serviceName];
+        const tokenDescription = serviceAuthTokenDescriptions[inputs.serviceName];
 
         const permissionRows = tokenDescription.permissions.map(
             (permission) => html`
@@ -166,8 +155,9 @@ export const VirServiceAuthTokenEntry = defineElement<{
             </section>
             <section class="tokens">${authTokenTemplates}</section>
             <${ViraButton.assign({
-                text: 'Add',
-                buttonStyle: ViraButtonStyleEnum.Outline,
+                text: 'Add Token',
+                disabled: inputs.disabled,
+                buttonStyle: ViraButtonStyle.Outline,
             })}
                 ${listen('click', () => {
                     dispatch(

@@ -3,12 +3,7 @@ import {extractErrorMessage, log} from '@augment-vir/common';
 import type {AuthToken} from '@review-vir/adapter-core';
 import {assertValidShape} from 'object-shape-tester';
 import {sum} from '../augments/sum.js';
-import {
-    githubGraphqlErrorShape,
-    githubSearchQuery,
-    githubSearchShape,
-    type GithubSearch,
-} from './graphql-query.js';
+import {githubGraphqlErrorShape, githubSearchQuery, type GithubSearch} from './graphql-query.js';
 
 function createGithubGraphqlQuery(cursor: string | undefined): {
     query: string;
@@ -44,25 +39,30 @@ export async function fetchGithubPullRequests(
                 },
                 body: JSON.stringify(queryBody),
             });
-            const response = (await rawResponse.json()) as Readonly<GithubSearch>;
+            if (!rawResponse.ok) {
+                throw new Error(
+                    `GitHub API fetch failed: ${rawResponse.status}, ${rawResponse.statusText}`,
+                );
+            }
+            const responseJson = (await rawResponse.json()) as Readonly<GithubSearch>;
 
-            if (response.errors) {
-                response.errors.forEach((error: unknown) => {
+            if (responseJson.errors) {
+                responseJson.errors.forEach((error: unknown) => {
                     assertValidShape(error, githubGraphqlErrorShape);
                     log.error(error);
                 });
                 throw new Error('Failed to fetch GitHub pull requests. See console for details.');
             }
 
-            assertValidShape(response, githubSearchShape);
+            // assertValidShape(responseJson, githubSearchShape);
 
-            cursor = response.data.search.pageInfo.hasNextPage
-                ? response.data.search.pageInfo.endCursor || undefined
+            cursor = responseJson.data.search.pageInfo.hasNextPage
+                ? responseJson.data.search.pageInfo.endCursor || undefined
                 : undefined;
-            paginatedResponses.push(response);
-            if (response.data.search.issueCount > 1000) {
+            paginatedResponses.push(responseJson);
+            if (responseJson.data.search.issueCount > 1000) {
                 throw new Error(
-                    `Search too broad: got '${response.data.search.issueCount}' items.`,
+                    `Search too broad: got '${responseJson.data.search.issueCount}' items.`,
                 );
             }
         } while (cursor);

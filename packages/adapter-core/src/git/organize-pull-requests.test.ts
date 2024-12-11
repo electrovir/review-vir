@@ -240,13 +240,10 @@ describe(organizePullRequests.name, () => {
     function testOrganizePullRequests(...args: Parameters<typeof organizePullRequests>) {
         const pullRequests = organizePullRequests(...args);
 
-        // console.log(pullRequests['user name']?.chainedPullRequests);
-
         return mapObjectValues(pullRequests, (ownerName, ownedPullRequests) => {
             return {
-                owner: ownedPullRequests.owner.username,
                 chainedPullRequests: mapObjectValues(
-                    ownedPullRequests.chainedPullRequests,
+                    ownedPullRequests.pullRequests,
                     (key, pullRequests) => {
                         return pullRequests.map((pullRequest) => {
                             return unwrapPullRequests(pullRequest);
@@ -261,172 +258,167 @@ describe(organizePullRequests.name, () => {
     snapshotCases(testOrganizePullRequests, [
         {
             it: 'organizes pull requests',
-            inputs: [
-                {
-                    username: mockCurrentUserName,
-                },
-                [
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'ignored because no assignees or reviewers',
-                        },
-                        users: {
-                            assignees: {},
-                            reviewers: {},
-                        },
-                    }),
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'pending user review',
-                        },
-                        users: {
-                            assignees: {},
-                            reviewers: {
-                                [mockCurrentUserName]: {
-                                    user: mockGitUser,
-                                    isCodeOwner: false,
-                                    isPrimaryReviewer: false,
-                                    reviewStatus: PullRequestReviewStatus.Pending,
-                                },
+            input: [
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'ignored because no assignees or reviewers',
+                    },
+                    users: {
+                        assignees: {},
+                        reviewers: {},
+                    },
+                }),
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'pending user review',
+                    },
+                    users: {
+                        assignees: {},
+                        reviewers: {
+                            [mockCurrentUserName]: {
+                                user: mockGitUser,
+                                isCodeOwner: false,
+                                isPrimaryReviewer: false,
+                                reviewStatus: PullRequestReviewStatus.Pending,
                             },
                         },
-                    }),
-                    // should be head of chain
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'head of chain 1',
+                    },
+                }),
+                // should be head of chain
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'head of chain 1',
+                    },
+                    branches: {
+                        headBranch: {
+                            branchName: 'head 1',
                         },
-                        branches: {
-                            headBranch: {
-                                branchName: 'head 1',
+                    },
+                    currentUser: {
+                        isPrimaryReviewer: false,
+                        isCodeOwner: false,
+                    },
+                    users: {
+                        assignees: {},
+                        reviewers: {
+                            [mockCurrentUserName]: {
+                                user: mockGitUser,
+                                isPrimaryReviewer: false,
+                                isCodeOwner: false,
+                                reviewStatus: PullRequestReviewStatus.Pending,
                             },
                         },
-                        currentUser: {
-                            isPrimaryReviewer: false,
-                            isCodeOwner: false,
+                    },
+                }),
+                // should be chained
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'chain 1 child 1',
+                    },
+                    branches: {
+                        targetBranch: {
+                            branchName: 'head 1',
                         },
-                        users: {
-                            assignees: {},
-                            reviewers: {
-                                [mockCurrentUserName]: {
-                                    user: mockGitUser,
-                                    isPrimaryReviewer: false,
-                                    isCodeOwner: false,
-                                    reviewStatus: PullRequestReviewStatus.Pending,
-                                },
+                    },
+                    dates: {
+                        lastUpdated: calculateRelativeDate(mockPullRequestDate, {days: 1}),
+                    },
+                    currentUser: {
+                        isPrimaryReviewer: false,
+                        isCodeOwner: false,
+                    },
+                    users: {
+                        assignees: {},
+                        reviewers: {
+                            [mockCurrentUserName]: {
+                                user: mockGitUser,
+                                isPrimaryReviewer: false,
+                                isCodeOwner: false,
+                                reviewStatus: PullRequestReviewStatus.Pending,
                             },
                         },
-                    }),
-                    // should be chained
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'chain 1 child 1',
-                        },
-                        branches: {
-                            targetBranch: {
-                                branchName: 'head 1',
+                    },
+                }),
+                // should not be chained because it's from a different repo
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'not chained',
+                    },
+                    branches: {
+                        targetBranch: {
+                            branchName: 'head 1',
+                            repo: {
+                                repoName: 'some other repo',
                             },
                         },
-                        dates: {
-                            lastUpdated: calculateRelativeDate(mockPullRequestDate, {days: 1}),
-                        },
-                        currentUser: {
-                            isPrimaryReviewer: false,
-                            isCodeOwner: false,
-                        },
-                        users: {
-                            assignees: {},
-                            reviewers: {
-                                [mockCurrentUserName]: {
-                                    user: mockGitUser,
-                                    isPrimaryReviewer: false,
-                                    isCodeOwner: false,
-                                    reviewStatus: PullRequestReviewStatus.Pending,
-                                },
+                    },
+                    currentUser: {
+                        isPrimaryReviewer: false,
+                        isCodeOwner: true,
+                    },
+                    users: {
+                        assignees: {},
+                        reviewers: {
+                            [mockCurrentUserName]: {
+                                user: mockGitUser,
+                                isPrimaryReviewer: false,
+                                isCodeOwner: true,
+                                reviewStatus: PullRequestReviewStatus.Pending,
                             },
                         },
-                    }),
-                    // should not be chained because it's from a different repo
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'not chained',
-                        },
-                        branches: {
-                            targetBranch: {
-                                branchName: 'head 1',
-                                repo: {
-                                    repoName: 'some other repo',
-                                },
+                    },
+                }),
+                // should be ignored because it's merged
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'merged',
+                    },
+                    status: {
+                        mergeStatus: PullRequestMergeStatus.Merged,
+                    },
+                    users: {
+                        assignees: {},
+                        reviewers: {
+                            [mockCurrentUserName]: {
+                                user: mockGitUser,
+                                isPrimaryReviewer: false,
+                                isCodeOwner: true,
+                                reviewStatus: PullRequestReviewStatus.Pending,
                             },
                         },
-                        currentUser: {
-                            isPrimaryReviewer: false,
-                            isCodeOwner: true,
-                        },
-                        users: {
-                            assignees: {},
-                            reviewers: {
-                                [mockCurrentUserName]: {
-                                    user: mockGitUser,
-                                    isPrimaryReviewer: false,
-                                    isCodeOwner: true,
-                                    reviewStatus: PullRequestReviewStatus.Pending,
-                                },
+                    },
+                }),
+                // should be ignored because it's rejected
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'rejected',
+                    },
+                    status: {
+                        mergeStatus: PullRequestMergeStatus.Rejected,
+                    },
+                    users: {
+                        assignees: {},
+                        reviewers: {
+                            [mockCurrentUserName]: {
+                                user: mockGitUser,
+                                isPrimaryReviewer: false,
+                                isCodeOwner: true,
+                                reviewStatus: PullRequestReviewStatus.Pending,
                             },
                         },
-                    }),
-                    // should be ignored because it's merged
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'merged',
+                    },
+                }),
+                mergeDeep(mockPullRequest, {
+                    id: {
+                        prId: 'assigned',
+                    },
+                    users: {
+                        assignees: {
+                            [mockCurrentUserName]: mockGitUser,
                         },
-                        status: {
-                            mergeStatus: PullRequestMergeStatus.Merged,
-                        },
-                        users: {
-                            assignees: {},
-                            reviewers: {
-                                [mockCurrentUserName]: {
-                                    user: mockGitUser,
-                                    isPrimaryReviewer: false,
-                                    isCodeOwner: true,
-                                    reviewStatus: PullRequestReviewStatus.Pending,
-                                },
-                            },
-                        },
-                    }),
-                    // should be ignored because it's rejected
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'rejected',
-                        },
-                        status: {
-                            mergeStatus: PullRequestMergeStatus.Rejected,
-                        },
-                        users: {
-                            assignees: {},
-                            reviewers: {
-                                [mockCurrentUserName]: {
-                                    user: mockGitUser,
-                                    isPrimaryReviewer: false,
-                                    isCodeOwner: true,
-                                    reviewStatus: PullRequestReviewStatus.Pending,
-                                },
-                            },
-                        },
-                    }),
-                    mergeDeep(mockPullRequest, {
-                        id: {
-                            prId: 'assigned',
-                        },
-                        users: {
-                            assignees: {
-                                [mockCurrentUserName]: mockGitUser,
-                            },
-                            reviewers: {},
-                        },
-                    }),
-                ],
+                        reviewers: {},
+                    },
+                }),
             ],
         },
     ]);

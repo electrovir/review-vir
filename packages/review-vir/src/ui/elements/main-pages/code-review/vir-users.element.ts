@@ -1,17 +1,12 @@
+import {GitUser, PullRequestReview} from '@review-vir/adapter-core';
 import {css, defineElement, html} from 'element-vir';
-import {PullRequestReview} from '../../../data/git/pull-request.js';
-import {User} from '../../../data/git/user.js';
 import {VirUser} from './vir-user.element.js';
 
 export const VirUsers = defineElement<{
-    users: ReadonlyArray<Readonly<User>>;
-    holdStatusSpace?: boolean | undefined;
-    reviews?:
-        | undefined
-        | Readonly<{
-              [username in string]: Readonly<Omit<PullRequestReview, 'user'>> | undefined;
-          }>;
+    users: ReadonlyArray<Readonly<GitUser | PullRequestReview>>;
     overlap: boolean;
+    /** Hold space for review status icons below the user avatars. */
+    holdStatusSpace?: boolean | undefined;
 }>()({
     tagName: 'vir-users',
     hostClasses: {
@@ -32,8 +27,13 @@ export const VirUsers = defineElement<{
             margin-left: -10px;
         }
     `,
-    renderCallback({inputs}) {
-        const sortedUsers = [...inputs.users].sort((a, b) => a.username.localeCompare(b.username));
+    render({inputs}) {
+        const sortedUsers = inputs.users.toSorted((a, b) => {
+            const aUser: GitUser = 'user' in a ? a.user : a;
+            const bUser: GitUser = 'user' in b ? b.user : b;
+
+            return aUser.username.localeCompare(bUser.username);
+        });
 
         const avatarTemplates = sortedUsers.map((user) => {
             return html`
@@ -44,7 +44,6 @@ export const VirUsers = defineElement<{
                         username: false,
                         statusSpace: inputs.holdStatusSpace,
                     },
-                    review: inputs.reviews?.[user.username],
                 })}></${VirUser}>
             `;
         });

@@ -1,5 +1,5 @@
 import {wait} from '@augment-vir/common';
-import {mockGitUser} from '../git/git-user.mock.js';
+import {getNowInUserTimezone} from 'date-vir';
 import {defineGitAdapter} from './define-git-adapter.js';
 
 export const MockGitAdapter = defineGitAdapter({
@@ -11,7 +11,7 @@ export const MockGitAdapter = defineGitAdapter({
             data: [
                 {
                     pullRequests: [],
-                    user: mockGitUser,
+                    time: getNowInUserTimezone(),
                 },
             ],
         };

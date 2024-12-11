@@ -1,8 +1,8 @@
 import {assert, waitUntil} from '@augment-vir/assert';
 import {extractErrorMessage, randomString, wait} from '@augment-vir/common';
 import {describe, it} from '@augment-vir/test';
+import {getNowInUserTimezone} from 'date-vir';
 import {saveServiceAuthTokens} from '../auth-store/auth-access.js';
-import {mockGitUser} from '../git/git-user.mock.js';
 import {defineGitAdapter, type GitAdapterDefinition} from './define-git-adapter.js';
 import {MockGitAdapter} from './define-git-adapter.mock.js';
 import {gitAdapterEvents} from './git-adapter.event.js';
@@ -234,7 +234,7 @@ describe(GitAdapter.name, () => {
                     data: [
                         {
                             pullRequests: [],
-                            user: mockGitUser,
+                            time: getNowInUserTimezone(),
                         },
                     ],
                 };
