@@ -282,7 +282,7 @@ function determineDisplayStatus(
         return PullRequestDisplayStatus.UnresolvedComments;
     } else if (
         (!pullRequest.status.checksStatus ||
-            pullRequest.status.checksStatus.successCount !==
+            pullRequest.status.checksStatus.successCount <
                 pullRequest.status.checksStatus.totalCount) &&
         Object.values(pullRequest.users.reviewers).every((user) => {
             if (user.isCodeOwner || user.isPrimaryReviewer) {

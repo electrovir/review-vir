@@ -14,5 +14,5 @@ export const sharedColors = {
     inProgress: 'dodgerblue',
     codeOwner: 'dodgerblue',
     primary: 'orange',
-    success: 'green',
+    success: '#00ad14',
 };

@@ -16,6 +16,7 @@ import {
     ViraLink,
     type ViraIconSvg,
 } from 'vira';
+import {sharedColors} from '../../../styles/color.js';
 import {VirUsers} from './vir-users.element.js';
 
 export const pullRequestMaxWidth = 800;
@@ -27,11 +28,6 @@ const statusHostClasses = arrayToObject(getEnumValues(PullRequestDisplayStatus),
             inputs.pullRequest.status.displayStatus === enumValue,
     };
 });
-
-const sharedColors = {
-    error: 'red',
-    inProgress: 'dodgerblue',
-};
 
 const statusConfigs: Record<
     PullRequestDisplayStatus,
@@ -51,7 +47,7 @@ const statusConfigs: Record<
     },
     [PullRequestDisplayStatus.ReadyToMerge]: {
         icon: StatusSuccess24Icon,
-        borderColor: 'green',
+        borderColor: sharedColors.success,
         iconColor: undefined,
     },
     [PullRequestDisplayStatus.Waiting]: {
