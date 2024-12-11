@@ -43,7 +43,7 @@ export class GitDataLoader extends ListenTarget<
             });
 
         this.adapterWorkers = mapObjectValues(gitAdaptersByServiceName, (serviceName) => {
-            const worker = new Worker('/worker/git-adapter-worker.ts', {
+            const worker = new Worker(new URL('../worker/git-adapter-worker.ts', import.meta.url), {
                 type: 'module',
             });
 

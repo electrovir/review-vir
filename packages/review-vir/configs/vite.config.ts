@@ -37,6 +37,10 @@ export default defineConfig(
                 ...baseConfig.build,
                 outDir: join(basePaths.cwd, 'dist-pages'),
             },
+            worker: {
+                rollupOptions: baseConfig.build?.rollupOptions,
+                format: 'es',
+            },
         };
     },
 );
