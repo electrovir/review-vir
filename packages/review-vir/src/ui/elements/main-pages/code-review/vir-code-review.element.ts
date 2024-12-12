@@ -7,7 +7,7 @@ import {
 } from '@review-vir/adapter-core';
 import {isDateAfter, type FullDate} from 'date-vir';
 import {classMap, css, defineElement, html, type TemplateResult} from 'element-vir';
-import {LoaderAnimated24Icon, Options24Icon, ViraIcon, ViraLink} from 'vira';
+import {LoaderAnimated24Icon, ViraIcon} from 'vira';
 import {GitServiceName} from '../../../../data/all-adapters.js';
 import {
     GitDataLoader,
@@ -19,6 +19,7 @@ import {
 import {organizeGitData} from '../../../../data/organize-git-data.js';
 import {ReviewVirFullRoute, ReviewVirMainPath, ReviewVirRouter} from '../../../../data/routing.js';
 import {ChangeRouteEvent} from '../../../events/change-route.event.js';
+import {VirHeader} from '../../common-elements/vir-header.element.js';
 import {VirOrgReviewers} from './vir-org-reviewers.element.js';
 import {VirOrgSelector} from './vir-org-selector.element.js';
 import {pullRequestMaxWidth, VirPullRequest} from './vir-pull-request.element.js';
@@ -47,7 +48,6 @@ export const VirCodeReview = defineElement<{
         main {
             display: flex;
             gap: 32px;
-            padding: 8px 16px;
             overflow: hidden;
         }
 
@@ -75,27 +75,11 @@ export const VirCodeReview = defineElement<{
             visibility: hidden;
         }
 
-        header {
+        .updates {
+            opacity: 0.4;
             display: flex;
-            justify-content: space-between;
-            padding: 8px;
-
-            & > * {
-                display: flex;
-                align-items: center;
-            }
-
-            & .updates,
-            & .settings-link {
-                opacity: 0.4;
-                display: flex;
-                align-items: center;
-                gap: 4px;
-            }
-
-            & .settings-link {
-                margin-right: 16px;
-            }
+            align-items: center;
+            gap: 4px;
         }
     `,
     stateInitStatic: {
@@ -231,7 +215,9 @@ export const VirCodeReview = defineElement<{
         `;
 
         return html`
-            <header>
+            <${VirHeader.assign({
+                router: inputs.router,
+            })}>
                 <div class="updates">
                     <${ViraIcon.assign({
                         icon: LoaderAnimated24Icon,
@@ -245,20 +231,7 @@ export const VirCodeReview = defineElement<{
                         updateTime: earliestUpdateDate,
                     })}></${VirUpdateTime}>
                 </div>
-                <${ViraLink.assign({
-                    route: {
-                        router: inputs.router,
-                        route: {
-                            paths: [ReviewVirMainPath.Settings],
-                        },
-                    },
-                })}>
-                    <div class="settings-link">
-                        <${ViraIcon.assign({icon: Options24Icon})}></${ViraIcon}>
-                        Settings
-                    </div>
-                </${ViraLink}>
-            </header>
+            </${VirHeader}>
             <main>
                 ${allOrgNames.length
                     ? mainTemplate

@@ -1,5 +1,6 @@
 import {type DeclarativeElementDefinition} from 'element-vir';
 import {ReviewVirMainPath} from '../../../data/routing.js';
+import {VirAnnualReview} from '../main-pages/annual-review/vir-annual-review.element.js';
 import {VirSettings} from '../main-pages/settings/vir-settings.element.js';
 
 export const routeElements = {
@@ -9,4 +10,5 @@ export const routeElements = {
      */
     [ReviewVirMainPath.CodeReview]: undefined,
     [ReviewVirMainPath.Settings]: VirSettings,
+    [ReviewVirMainPath.AnnualReview]: VirAnnualReview,
 } satisfies Readonly<Record<ReviewVirMainPath, DeclarativeElementDefinition | undefined>>;

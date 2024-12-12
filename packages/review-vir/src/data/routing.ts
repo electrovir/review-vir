@@ -1,12 +1,15 @@
+import {check} from '@augment-vir/assert';
 import {FullRoute, SpaRouter} from 'spa-router-vir';
 
 export enum ReviewVirMainPath {
     Settings = 'settings',
     CodeReview = 'code-review',
+    AnnualReview = 'annual-review',
 }
 
 export type ValidReviewVirPaths =
     | [ReviewVirMainPath.Settings]
+    | [ReviewVirMainPath.AnnualReview]
     | [ReviewVirMainPath.CodeReview, /** Organization name. */ string]
     | [ReviewVirMainPath.CodeReview];
 
@@ -41,11 +44,7 @@ export type ReviewVirRouter = ReturnType<typeof createReviewVirRouter>;
 
 function sanitizePaths(rawPaths: ReadonlyArray<string>): ValidReviewVirPaths {
     const mainPath = rawPaths[0];
-    if (mainPath === ReviewVirMainPath.Settings) {
-        return [
-            ReviewVirMainPath.Settings,
-        ];
-    } else if (mainPath === ReviewVirMainPath.CodeReview) {
+    if (mainPath === ReviewVirMainPath.CodeReview) {
         if (rawPaths[1]) {
             return [
                 ReviewVirMainPath.CodeReview,
@@ -56,6 +55,10 @@ function sanitizePaths(rawPaths: ReadonlyArray<string>): ValidReviewVirPaths {
                 ReviewVirMainPath.CodeReview,
             ];
         }
+    } else if (check.isEnumValue(mainPath, ReviewVirMainPath)) {
+        return [
+            mainPath,
+        ];
     } else {
         return defaultReviewVirFullRoute.paths;
     }

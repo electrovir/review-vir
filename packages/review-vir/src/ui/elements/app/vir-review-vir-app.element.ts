@@ -29,15 +29,25 @@ import {routeElements} from './route-elements.js';
 export const VirReviewVirApp = defineElementNoInputs({
     tagName: 'vir-review-vir-app',
     styles: css`
+        :host {
+            padding: 8px 16px;
+            display: block;
+        }
+
         :host,
         .root {
             display: flex;
             flex-direction: column;
+            flex-grow: 1;
             min-height: 100%;
             width: 100%;
             box-sizing: border-box;
             font-family: sans-serif;
             gap: 16px;
+        }
+
+        .root > * {
+            flex-grow: 1;
         }
 
         .hide-main-page {
@@ -120,6 +130,7 @@ export const VirReviewVirApp = defineElementNoInputs({
                   <${routedElement.assign({
                       secretEncryptionKey,
                       currentAppSettings: state.appSettings,
+                      router: state.router,
                   })}></${routedElement}>
               `
             : nothing;
