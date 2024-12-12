@@ -1,6 +1,6 @@
 import {arrayToObject, getEnumValues, getObjectTypedEntries} from '@augment-vir/common';
 import {PullRequestDisplayStatus, type PullRequest} from '@review-vir/adapter-core';
-import {css, defineElement, html, nothing, unsafeCSS} from 'element-vir';
+import {css, defineElement, html, ifDefined, nothing, unsafeCSS} from 'element-vir';
 import {
     Chat24Icon,
     Commit24Icon,
@@ -38,54 +38,65 @@ const statusConfigs: Record<
         iconColor: string | undefined;
         /** An `undefined` icon will be rendered in other ways. */
         icon: ViraIconSvg | undefined;
+        /** This will be the hover text for the icon. */
+        description: string | undefined;
     }
 > = {
     [PullRequestDisplayStatus.Draft]: {
         icon: Pencil24Icon,
         borderColor: undefined,
         iconColor: undefined,
+        description: 'This pull request is a draft.',
     },
     [PullRequestDisplayStatus.ReadyToMerge]: {
         icon: StatusSuccess24Icon,
         borderColor: sharedColors.success,
         iconColor: undefined,
+        description: 'This pull request is ready to merge!',
     },
     [PullRequestDisplayStatus.Waiting]: {
         icon: StatusInProgress24Icon,
         borderColor: undefined,
         iconColor: undefined,
+        description: 'This pull request is waiting for reviews or builds to finish.',
     },
 
     [PullRequestDisplayStatus.PrimaryReviewer]: {
         icon: Star24Icon,
         borderColor: 'orange',
         iconColor: undefined,
+        description: 'You are a primary reviewer of this pull request!',
     },
     [PullRequestDisplayStatus.CodeOwner]: {
         icon: Shield24Icon,
         borderColor: 'dodgerblue',
         iconColor: undefined,
+        description: 'You are a code owner reviewer of this pull request!',
     },
 
     [PullRequestDisplayStatus.MergeConflicts]: {
         icon: StatusFailure24Icon,
         borderColor: undefined,
         iconColor: sharedColors.error,
+        description: 'This pull request has merge conflicts.',
     },
     [PullRequestDisplayStatus.BuildFailureInProgress]: {
         icon: undefined,
         borderColor: undefined,
         iconColor: undefined,
+        description: undefined,
     },
     [PullRequestDisplayStatus.BuildFailureFinished]: {
         icon: undefined,
         borderColor: undefined,
         iconColor: undefined,
+        description: undefined,
     },
     [PullRequestDisplayStatus.UnresolvedComments]: {
         icon: Chat24Icon,
         borderColor: undefined,
         iconColor: sharedColors.error,
+        description: 'This pull request has unresolved comments.',
     },
 };
 
@@ -248,7 +259,7 @@ export const VirPullRequest = defineElement<{
 
                     & .status-icon {
                         ${viraIconCssVars['vira-icon-stroke-color'].name}: ${cssVars[
-                            'vir-pull-request-border-color'
+                            'vir-pull-request-icon-color'
                         ].value};
                     }
 
@@ -275,17 +286,18 @@ export const VirPullRequest = defineElement<{
     render({inputs}) {
         const statusIconSvg = statusConfigs[inputs.pullRequest.status.displayStatus].icon;
         const failCount: number = inputs.pullRequest.status.checksStatus?.failCount || 0;
+        const statusIconTitle = statusConfigs[inputs.pullRequest.status.displayStatus].description;
+        const statusFailuresTitle = `${failCount} build failure${failCount === 1 ? '' : 's'} and builds are ${inputs.pullRequest.status.displayStatus === PullRequestDisplayStatus.BuildFailureFinished ? 'finished' : 'still in progress'}.`;
+
         const statusIconTemplate = statusIconSvg
             ? html`
-                  <${ViraIcon.assign({icon: statusIconSvg})} class="status-icon"></${ViraIcon}>
+                  <${ViraIcon.assign({icon: statusIconSvg})}
+                      class="status-icon"
+                      title=${ifDefined(statusIconTitle)}
+                  ></${ViraIcon}>
               `
             : html`
-                  <span
-                      class="status-failures"
-                      title="${failCount} build failure${failCount === 1 ? '' : 's'}"
-                  >
-                      ${failCount}
-                  </span>
+                  <span class="status-failures" title=${statusFailuresTitle}>${failCount}</span>
               `;
 
         const childMarkerTemplate = inputs.isChild
