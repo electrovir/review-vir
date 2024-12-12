@@ -207,27 +207,24 @@ export type GithubPullRequest = typeof githubPullRequestShape.runtimeType;
  */
 export const githubSearchShape = defineShape(
     {
-        errors: or([githubGraphqlErrorShape], undefined),
-        data: {
-            rateLimit: {
-                cost: 1,
-                limit: 5000,
-                nodeCount: 0,
-                remaining: 0,
-                resetAt: '',
-                used: 0,
+        rateLimit: {
+            cost: 1,
+            limit: 5000,
+            nodeCount: 0,
+            remaining: 0,
+            resetAt: '',
+            used: 0,
+        },
+        viewer: githubUserSearchResponseShape,
+        search: {
+            issueCount: 0,
+            pageInfo: {
+                endCursor: or('', null),
+                hasNextPage: false,
             },
-            viewer: githubUserSearchResponseShape,
-            search: {
-                issueCount: 0,
-                pageInfo: {
-                    endCursor: or('', null),
-                    hasNextPage: false,
-                },
-                nodes: [
-                    githubPullRequestShape,
-                ],
-            },
+            nodes: [
+                githubPullRequestShape,
+            ],
         },
     },
     true,
