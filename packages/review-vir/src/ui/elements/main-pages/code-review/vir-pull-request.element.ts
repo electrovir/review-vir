@@ -57,7 +57,7 @@ const statusConfigs: Record<
     [PullRequestDisplayStatus.Waiting]: {
         icon: StatusInProgress24Icon,
         borderColor: undefined,
-        iconColor: undefined,
+        iconColor: sharedColors.inProgress,
         description: 'This pull request is waiting for reviews or builds to finish.',
     },
 

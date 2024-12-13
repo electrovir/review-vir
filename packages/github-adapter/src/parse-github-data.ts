@@ -281,9 +281,9 @@ function determineDisplayStatus(
     } else if (pullRequest.status.comments.resolved < pullRequest.status.comments.total) {
         return PullRequestDisplayStatus.UnresolvedComments;
     } else if (
-        (!pullRequest.status.checksStatus ||
-            pullRequest.status.checksStatus.successCount <
-                pullRequest.status.checksStatus.totalCount) &&
+        !pullRequest.status.checksStatus ||
+        pullRequest.status.checksStatus.successCount < pullRequest.status.checksStatus.totalCount ||
+        pullRequest.status.checksStatus.inProgressCount ||
         Object.values(pullRequest.users.reviewers).every((user) => {
             if (user.isCodeOwner || user.isPrimaryReviewer) {
                 /** Only wait for accepted reviews for code owners and primary reviewers. */
