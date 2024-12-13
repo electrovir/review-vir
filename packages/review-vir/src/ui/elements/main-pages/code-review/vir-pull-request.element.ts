@@ -324,6 +324,7 @@ export const VirPullRequest = defineElement<{
                             <${VirUsers.assign({
                                 overlap: true,
                                 users: Object.values(inputs.pullRequest.users.assignees),
+                                fadedAvatar: false,
                             })}
                                 class="assignees"
                             ></${VirUsers}>
@@ -401,6 +402,7 @@ export const VirPullRequest = defineElement<{
                             overlap: true,
                             users: Object.values(inputs.pullRequest.users.reviewers),
                             holdStatusSpace: true,
+                            fadedAvatar: true,
                         })}></${VirUsers}>
                     </div>
                 </div>

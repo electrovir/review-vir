@@ -7,6 +7,7 @@ export const VirUsers = defineElement<{
     overlap: boolean;
     /** Hold space for review status icons below the user avatars. */
     holdStatusSpace?: boolean | undefined;
+    fadedAvatar: boolean;
 }>()({
     tagName: 'vir-users',
     hostClasses: {
@@ -35,7 +36,7 @@ export const VirUsers = defineElement<{
             return aUser.username.localeCompare(bUser.username);
         });
 
-        const avatarTemplates = sortedUsers.map((user) => {
+        const avatarTemplates = sortedUsers.map((user, index) => {
             return html`
                 <${VirUser.assign({
                     user,
@@ -44,7 +45,10 @@ export const VirUsers = defineElement<{
                         username: false,
                         statusSpace: inputs.holdStatusSpace,
                     },
-                })}></${VirUser}>
+                    fadedAvatar: inputs.fadedAvatar,
+                })}
+                    style="z-index: ${index}"
+                ></${VirUser}>
             `;
         });
 

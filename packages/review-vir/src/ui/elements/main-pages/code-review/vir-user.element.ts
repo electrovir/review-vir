@@ -22,9 +22,13 @@ export const VirUser = defineElement<{
         username: boolean;
         statusSpace?: boolean | undefined;
     }>;
+    fadedAvatar: boolean;
 }>()({
     tagName: 'vir-user',
-    styles: css`
+    hostClasses: {
+        'vir-user-faded': ({inputs}) => inputs.fadedAvatar,
+    },
+    styles: ({hostClasses}) => css`
         :host {
             ${viraIconCssVars['vira-icon-fill-color'].name}: white;
         }
@@ -32,7 +36,10 @@ export const VirUser = defineElement<{
         a {
             display: flex;
             align-items: center;
-            gap: 0.3em;
+        }
+
+        ${hostClasses['vir-user-faded'].selector} ${ViraImage} {
+            opacity: 0.75;
         }
 
         ${ViraImage} {
@@ -41,9 +48,7 @@ export const VirUser = defineElement<{
             min-height: ${avatarSize}px;
             min-width: ${avatarSize}px;
             box-sizing: border-box;
-            border-radius: 50%;
-            background-color: white;
-            border: 2px solid #eee;
+            margin: 1px 0;
         }
 
         ${ViraIcon} {
@@ -54,15 +59,33 @@ export const VirUser = defineElement<{
             color: ${unsafeCSS(sharedColors.success)};
         }
 
-        .avatar {
-            display: flex;
-            flex-direction: column;
+        .avatar-border {
+            position: absolute;
+            left: -1px;
+            border-radius: 50%;
+            border: 3px solid #f0f0f0;
+            box-sizing: border-box;
+            height: ${avatarSize + 2}px;
+            width: ${avatarSize + 2}px;
         }
 
-        .is-primary ${ViraImage} {
+        .avatar {
+            display: flex;
+            border-radius: 50%;
+            background-color: white;
+        }
+
+        .avatar-and-review-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .is-primary .avatar-border {
             border-color: ${unsafeCSS(sharedColors.primary)};
         }
-        .is-code-owner ${ViraImage} {
+        .is-code-owner .avatar-border {
             border-color: ${unsafeCSS(sharedColors.codeOwner)};
         }
 
@@ -107,12 +130,15 @@ export const VirUser = defineElement<{
                   `
                 : nothing;
         const avatarTemplate = html`
-            <div class="avatar">
-                <${ViraImage.assign({
-                    imageUrl: user.avatarUrl,
-                })}
-                    title=${user.username}
-                ></${ViraImage}>
+            <div class="avatar-and-review-wrapper">
+                <div class="avatar">
+                    <${ViraImage.assign({
+                        imageUrl: user.avatarUrl,
+                    })}
+                        title=${user.username}
+                    ></${ViraImage}>
+                </div>
+                <div class="avatar-border"></div>
                 ${statusTemplate}
             </div>
         `;
@@ -122,7 +148,10 @@ export const VirUser = defineElement<{
         return html`
             <a
                 href=${user.profileUrl}
-                class=${classMap({'is-primary': !!review?.isPrimaryReviewer})}
+                class=${classMap({
+                    'is-primary': !!review?.isPrimaryReviewer,
+                    'is-code-owner': !!review?.isCodeOwner,
+                })}
             >
                 ${inputs.show.avatar ? avatarTemplate : nothing}
                 ${inputs.show.username ? usernameTemplate : nothing}
