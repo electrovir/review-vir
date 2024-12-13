@@ -284,13 +284,13 @@ function determineDisplayStatus(
         !pullRequest.status.checksStatus ||
         pullRequest.status.checksStatus.successCount < pullRequest.status.checksStatus.totalCount ||
         pullRequest.status.checksStatus.inProgressCount ||
-        Object.values(pullRequest.users.reviewers).every((user) => {
+        Object.values(pullRequest.users.reviewers).some((user) => {
             if (user.isCodeOwner || user.isPrimaryReviewer) {
                 /** Only wait for accepted reviews for code owners and primary reviewers. */
-                return user.reviewStatus === PullRequestReviewStatus.Accepted;
+                return user.reviewStatus !== PullRequestReviewStatus.Accepted;
             } else {
                 /** Any rejected review blocks merging. */
-                return user.reviewStatus !== PullRequestReviewStatus.Rejected;
+                return user.reviewStatus === PullRequestReviewStatus.Rejected;
             }
         })
     ) {
