@@ -106,9 +106,11 @@ const statusStyles = getObjectTypedEntries(statusConfigs)
             status,
             config,
         ]): string => {
+            const iconColor = config.iconColor || config.borderColor;
+
             const styleContents = [
                 config.borderColor ? `--vir-pull-request-border-color: ${config.borderColor};` : '',
-                config.iconColor ? `--vir-pull-request-icon-color: ${config.iconColor};` : '',
+                iconColor ? `--vir-pull-request-icon-color: ${iconColor};` : '',
             ].join('');
 
             if (!styleContents) {
