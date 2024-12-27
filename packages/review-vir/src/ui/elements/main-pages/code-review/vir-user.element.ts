@@ -67,6 +67,7 @@ export const VirUser = defineElement<{
             box-sizing: border-box;
             height: ${avatarSize + 2}px;
             width: ${avatarSize + 2}px;
+            pointer-events: none;
         }
 
         .avatar {
