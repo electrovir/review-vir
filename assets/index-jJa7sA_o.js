@@ -1735,6 +1735,7 @@ does not match RegExp
             box-sizing: border-box;
             height: ${De+2}px;
             width: ${De+2}px;
+            pointer-events: none;
         }
 
         .avatar {
